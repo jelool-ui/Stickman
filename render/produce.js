@@ -57,8 +57,10 @@ export async function produceVideo(storyboard, { characters, profiles, outDir, v
   done('images');
 
   step('mixage'); log('🔊 Mixage et assemblage…');
-  mixAudio({ voice: tmp('voice.wav'), music: tmp('music.wav'), sfx: tmp('sfx.wav'), out: tmp('mix.wav'), duration: sb.duration });
-  const r = spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', silent, '-i', tmp('mix.wav'), '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-movflags', '+faststart', files.video], { encoding: 'utf8' });
+  // L'audio est coupé à la durée exacte de la vidéo en images entières : pistes parfaitement alignées.
+  const videoDuration = Math.round(sb.duration * FPS) / FPS;
+  mixAudio({ voice: tmp('voice.wav'), music: tmp('music.wav'), sfx: tmp('sfx.wav'), out: tmp('mix.wav'), duration: videoDuration });
+  const r = spawnSync('ffmpeg', ['-v', 'error', '-y', '-i', silent, '-i', tmp('mix.wav'), '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-af', 'apad', '-c:a', 'aac', '-b:a', '192k', '-ar', '44100', '-t', videoDuration.toFixed(3), '-movflags', '+faststart', files.video], { encoding: 'utf8' });
   if (r.status !== 0) throw new Error(`ffmpeg (assemblage) : ${r.stderr}`);
   done('mixage');
 

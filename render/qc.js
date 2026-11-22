@@ -81,7 +81,9 @@ export function runQualityChecks({ files, storyboard, expected = {} }) {
   add('frames', 'Aucune image manquante', Math.abs(frames - expectedFrames) <= 2, frames, expectedFrames);
   add('audio_present', 'Piste audio présente (AAC)', a?.codec_name === 'aac', a?.codec_name || 'absente', 'aac');
   const vDur = Number(v?.duration || dur), aDur = Number(a?.duration || 0);
-  add('av_sync', 'Pistes audio et vidéo de même durée', a && Math.abs(vDur - aDur) < 0.1, `${vDur.toFixed(2)} / ${aDur.toFixed(2)} s`, 'écart < 0,1 s');
+  // Tolérance : une image (arrondi de la vidéo) + un paquet AAC (≈ 23 ms), au moins 0,1 s.
+  const avTol = Math.max(0.1, 1 / (fps || 30) + 0.03);
+  add('av_sync', 'Pistes audio et vidéo de même durée', a && Math.abs(vDur - aDur) < avTol, `${vDur.toFixed(3)} / ${aDur.toFixed(3)} s`, `écart < ${avTol.toFixed(2)} s`);
 
   const loud = measureLoudness(files.video);
   add('loudness', 'Volume normalisé (−14 LUFS ± 2)', Math.abs(loud.lufs + 14) <= 2, `${loud.lufs} LUFS`, '−16 à −12 LUFS', false);
