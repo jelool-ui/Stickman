@@ -82,6 +82,40 @@ try {
   const pos = Number(await page.inputValue('.player-controls input'));
   if (!(pos > 0.3)) failures.push(`lecteur du storyboard bloqué (${pos})`);
   if (shotsDir) await page.screenshot({ path: `${shotsDir}/storyboard-player.png` });
+
+  // Idées : générer 20 idées, en choisir une, voir 3 hooks, créer le storyboard
+  await page.goto(`${base}#ideas`);
+  await page.click('button:has-text("Générer 20 idées")');
+  const n = await page.locator('.list li').count();
+  if (n !== 20) failures.push(`idées générées : ${n} au lieu de 20`);
+  await page.locator('.list li').nth(2).click();
+  const hooks = await page.locator('.hook').count();
+  if (hooks !== 3) failures.push(`hooks proposés : ${hooks} au lieu de 3`);
+  if (shotsDir) await page.screenshot({ path: `${shotsDir}/ideas-hooks.png`, fullPage: true });
+  const ovIdeas = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  if (ovIdeas > 0) failures.push(`idées : défilement horizontal de ${ovIdeas}px`);
+  await page.click('button:has-text("Créer le storyboard")');
+  await page.waitForFunction(() => location.hash === '#storyboard', null, { timeout: 4000 }).catch(() => failures.push('pas de navigation vers le storyboard'));
+  await page.waitForFunction(() => document.querySelector('.content').textContent.includes('Storyboard valide'), null, { timeout: 4000 })
+    .catch(() => failures.push('storyboard issu d’une idée non valide'));
+
+  // Générateur : mode automatique
+  await page.goto(`${base}#generator`);
+  await page.click('button:has-text("Générer le storyboard")');
+  await page.waitForFunction(() => location.hash === '#storyboard', null, { timeout: 4000 }).catch(() => failures.push('génération automatique sans résultat'));
+  await page.waitForFunction(() => document.querySelector('.content').textContent.includes('Les 3 hooks proposés'), null, { timeout: 4000 }).catch(() => {});
+  const txt = await page.textContent('.content');
+  if (!txt.includes('Storyboard valide')) failures.push('storyboard automatique non valide');
+  if (!txt.includes('Les 3 hooks proposés')) failures.push('hooks absents du storyboard');
+  if (shotsDir) await page.screenshot({ path: `${shotsDir}/storyboard-generated.png`, fullPage: true });
+
+  const ov = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  if (ov > 0) failures.push(`storyboard généré : défilement horizontal de ${ov}px`);
+
+  // Historique : les storyboards sont enregistrés
+  await page.goto(`${base}#history`);
+  const items = await page.locator('.list li').count();
+  if (items < 2) failures.push(`historique : ${items} entrée(s)`);
 } finally {
   await browser.close();
   server.kill();
@@ -91,4 +125,4 @@ if (failures.length) {
   console.error('❌ Test interface :\n - ' + failures.join('\n - '));
   process.exit(1);
 }
-console.log(`✅ Test interface : ${Object.keys(pages).length} pages + 6 interactions OK (largeur 384 px)`);
+console.log(`✅ Test interface : ${Object.keys(pages).length} pages + 10 interactions OK (largeur 384 px)`);

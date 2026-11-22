@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useStore } from '../state/store.jsx';
 import { ANIMATIONS, ANIMATION_LABELS, BACKGROUNDS, CAMERAS, TRANSITIONS } from '../../engine/catalog.js';
 import { Card, Field, Select, Empty, Notice, CategoryTag } from '../components/ui.jsx';
 import Player from '../components/Player.jsx';
+import { validateStoryboard } from '../../engine/story/validate.js';
+
+const SCENE_TYPES = { hook: 'Hook', setup: 'Présentation', development: 'Développement', escalation: 'Escalade', reveal: 'Révélation', conclusion: 'Conclusion' };
 
 export default function Storyboard() {
   const { state, dispatch } = useStore();
   const sb = state.storyboard;
+  const v = useMemo(() => (!sb || sb.isExample ? null : validateStoryboard(sb, { characters: state.characters })), [sb, state.characters]);
   if (!sb) return <Card><Empty icon="🎞️" title="Aucun storyboard" /></Card>;
   const total = sb.scenes.reduce((s, x) => s + Number(x.duration || 0), 0);
   const charName = (id) => state.characters.find((c) => c.id === id)?.name || id;
@@ -14,9 +18,13 @@ export default function Storyboard() {
 
   return (
     <>
-      {sb.isExample && <Notice tone="warn">Storyboard d'exemple : le générateur réel arrive en Phase 4.</Notice>}
+      {sb.isExample && <Notice tone="warn">Storyboard d'exemple. Générez-en un vrai depuis « Vidéos » ou « Idées ».</Notice>}
+      {v && (v.ok
+        ? <Notice tone="ok">✅ Storyboard valide : {v.stats.scenes} scènes, {v.stats.duration} s, {v.stats.words} mots.{v.warnings.length ? ` ⚠️ ${v.warnings.join(' ; ')}` : ''}</Notice>
+        : <Notice tone="bad">❌ À corriger : {v.errors.join(' ; ')}</Notice>)}
       <Card title={sb.title}>
-        <p className="muted"><CategoryTag id={sb.category} /> · {sb.scenes.length} scènes · {total.toFixed(1)} s</p>
+        <p className="muted"><CategoryTag id={sb.category} /> · {sb.scenes.length} scènes · {total.toFixed(1)} s{sb.label ? ` · 🏷️ ${sb.label}` : ' · ✔️ faits sourcés'}</p>
+        {sb.hook?.text && <p>🎣 <strong>Hook :</strong> {sb.hook.text}</p>}
         <div className="timeline">
           {sb.scenes.map((s) => (
             <div key={s.scene_id} style={{ flexGrow: s.duration }} title={`Scène ${s.scene_id}`}>{s.scene_id}</div>
@@ -25,12 +33,28 @@ export default function Storyboard() {
       </Card>
 
       <Card title="Aperçu animé">
-        <Player storyboard={sb} characters={state.characters} width={240} />
+        <Player storyboard={sb} characters={state.characters} width={240} style={sb.style || 'classic'} />
         <p className="muted small">Aperçu calculé par le même moteur que la vidéo finale (sans voix ni musique pour l'instant).</p>
       </Card>
 
+      {sb.hook?.proposals?.length > 0 && (
+        <Card title="Les 3 hooks proposés">
+          <ol className="hooks">
+            {sb.hook.proposals.map((h, i) => <li key={i} className={h.best ? 'best' : ''}>{h.text} <span className="muted">({h.total}/30)</span></li>)}
+          </ol>
+        </Card>
+      )}
+
+      {sb.sources?.length > 0 && (
+        <Card title="Sources">
+          <ul className="sources">
+            {sb.sources.map((src) => <li key={src.url}><a href={src.url} target="_blank" rel="noreferrer">{src.title}</a> <span className="muted small">(vérifiée le {src.checked})</span></li>)}
+          </ul>
+        </Card>
+      )}
+
       {sb.scenes.map((s) => (
-        <Card key={s.scene_id} title={`Scène ${s.scene_id}`} className="scene">
+        <Card key={s.scene_id} title={`Scène ${s.scene_id}${s.scene_type ? ` · ${SCENE_TYPES[s.scene_type] || s.scene_type}` : ''}`} className="scene">
           {s.narration && <p className="narration">🎙️ {s.narration}</p>}
           {s.dialogue.map((d, i) => (
             <p key={i} className="dialogue"><strong>{charName(d.character_id)} :</strong> « {d.text} »</p>

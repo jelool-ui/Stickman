@@ -15,9 +15,11 @@
     "test:watch": "vitest",
     "doctor": "node scripts/doctor.js",
     "test:ui": "vite build && node scripts/ui-smoke.mjs",
-    "render:test": "node scripts/render-test-scene.js"
+    "render:test": "node scripts/render-test-scene.js",
+    "storyboard": "node scripts/generate-storyboard.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0",
     "@resvg/resvg-js": "^2.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

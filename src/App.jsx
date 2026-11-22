@@ -45,7 +45,7 @@ export default function App() {
       <div className="app">
         <header className="topbar">
           <span className="logo">Stick Studio <em>AI</em></span>
-          <span className="badge">v0.3</span>
+          <span className="badge">v0.4</span>
         </header>
         <main className="content">
           <h1>{icon} {title}</h1>

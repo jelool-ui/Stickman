@@ -1,0 +1,101 @@
+// Profils des six catégories : consignes de narration, familles de hooks, décors, sons, modèles de storyboard, rythme.
+export const CATEGORY_PROFILES = {
+  explainer: {
+    contentType: 'fact',
+    label: null,
+    narration: "Ton clair et bienveillant. Le Guide explique, le personnage principal pose les questions. Une idée par scène, phrases courtes, aucun jargon sans explication. Uniquement des faits vérifiés, avec leurs sources.",
+    hookFamilies: ['question', 'everyday', 'promise-seconds', 'secret-word'],
+    backgrounds: ['school', 'abstract', 'landscape', 'house', 'office'],
+    sfx: { hook: 'pop', setup: 'whoosh', development: 'click', escalation: 'whoosh', reveal: 'ding', conclusion: 'pop' },
+    rhythm: { wordsPerSecond: 2.5, minScene: 2.5, maxScene: 7, pad: 0.6 },
+    transitions: { default: 'slide-left', reveal: 'flash' },
+    cameras: { hook: 'zoom-in', setup: 'static', development: 'pan-right', escalation: 'zoom-in', reveal: 'focus', conclusion: 'zoom-out' },
+    template: 'question-explication-revelation',
+    music: 'curieux',
+  },
+  comedy: {
+    contentType: 'fiction',
+    label: 'Histoire inventée',
+    narration: "Situations du quotidien, exagération progressive, dialogues très courts. La chute arrive à la fin et doit être préparée par les scènes précédentes. Jamais méchant.",
+    hookFamilies: ['situation', 'pov', 'no-believe', 'thought-understood'],
+    backgrounds: ['house', 'office', 'street', 'bedroom', 'city'],
+    sfx: { hook: 'boing', setup: 'pop', development: 'boing', escalation: 'drumroll', reveal: 'rimshot', conclusion: 'laugh' },
+    rhythm: { wordsPerSecond: 2.8, minScene: 2.2, maxScene: 6, pad: 0.5 },
+    transitions: { default: 'cut', reveal: 'flash' },
+    cameras: { hook: 'zoom-in', setup: 'static', development: 'static', escalation: 'zoom-in', reveal: 'shake', conclusion: 'zoom-out' },
+    template: 'situation-escalade-chute',
+    music: 'joyeux',
+  },
+  mysteres: {
+    contentType: 'fiction',
+    label: 'Histoire inventée',
+    narration: "Ambiance intrigante mais jamais effrayante. Chaque scène apporte un indice. La solution est logique, annoncée par les indices, et révélée à la fin. Toujours une explication rationnelle.",
+    hookFamilies: ['mystery-situation', 'riddle', 'clue', 'thought-understood'],
+    backgrounds: ['mystery', 'house', 'city', 'street', 'landscape'],
+    sfx: { hook: 'suspense', setup: 'tick', development: 'suspense', escalation: 'heartbeat', reveal: 'reveal', conclusion: 'soft' },
+    rhythm: { wordsPerSecond: 2.4, minScene: 2.8, maxScene: 7, pad: 0.7 },
+    transitions: { default: 'fade', reveal: 'flash' },
+    cameras: { hook: 'focus', setup: 'pan-left', development: 'zoom-in', escalation: 'shake', reveal: 'focus', conclusion: 'zoom-out' },
+    template: 'enigme-indices-solution',
+    music: 'mysterieux',
+  },
+  etsi: {
+    contentType: 'hypothetical',
+    label: 'Scénario imaginaire',
+    narration: "On part d'une hypothèse impossible et on en tire les conséquences, de la plus amusante à la plus surprenante. Les affirmations scientifiques restent prudentes et générales.",
+    hookFamilies: ['imagine', 'what-if', 'question'],
+    backgrounds: ['city', 'space', 'landscape', 'abstract', 'house'],
+    sfx: { hook: 'whoosh', setup: 'magic', development: 'pop', escalation: 'whoosh', reveal: 'ding', conclusion: 'soft' },
+    rhythm: { wordsPerSecond: 2.6, minScene: 2.5, maxScene: 6.5, pad: 0.6 },
+    transitions: { default: 'zoom', reveal: 'flash' },
+    cameras: { hook: 'zoom-out', setup: 'static', development: 'pan-right', escalation: 'zoom-in', reveal: 'focus', conclusion: 'zoom-out' },
+    template: 'hypothese-consequences-lecon',
+    music: 'reveur',
+  },
+  facts: {
+    contentType: 'fact',
+    label: null,
+    narration: "Trois faits réels et vérifiés, chacun suivi d'une explication simple. Aucun chiffre sans source. Le ton est enthousiaste mais précis.",
+    hookFamilies: ['facts-count', 'facts-last', 'facts-think-know'],
+    backgrounds: ['abstract', 'landscape', 'space', 'city', 'school'],
+    sfx: { hook: 'pop', setup: 'ding', development: 'click', escalation: 'ding', reveal: 'ding', conclusion: 'pop' },
+    rhythm: { wordsPerSecond: 2.6, minScene: 2.3, maxScene: 6.5, pad: 0.5 },
+    transitions: { default: 'slide-up', reveal: 'slide-up' },
+    cameras: { hook: 'zoom-in', setup: 'static', development: 'static', escalation: 'pan-left', reveal: 'focus', conclusion: 'zoom-out' },
+    template: 'trois-faits',
+    music: 'dynamique',
+  },
+  motivation: {
+    contentType: 'fiction',
+    label: 'Histoire inventée',
+    narration: "Histoire originale d'un personnage ordinaire face à une difficulté. Progression sincère, sans promesse miracle. La leçon finale est courte et concrète.",
+    hookFamilies: ['number', 'everyone-said', 'motiv-question', 'situation'],
+    backgrounds: ['landscape', 'school', 'city', 'street', 'bedroom'],
+    sfx: { hook: 'soft', setup: 'soft', development: 'heartbeat', escalation: 'rise', reveal: 'success', conclusion: 'soft' },
+    rhythm: { wordsPerSecond: 2.4, minScene: 2.8, maxScene: 7, pad: 0.7 },
+    transitions: { default: 'fade', reveal: 'fade' },
+    cameras: { hook: 'zoom-in', setup: 'pan-right', development: 'static', escalation: 'zoom-in', reveal: 'focus', conclusion: 'zoom-out' },
+    template: 'difficulte-perseverance-lecon',
+    music: 'inspirant',
+  },
+};
+
+/** Question de fin adressée au spectateur (courte, honnête, sans promesse). */
+export const OUTROS = {
+  explainer: ['Maintenant, tu peux l’expliquer à quelqu’un autour de toi.', 'La prochaine fois, c’est toi qui l’expliqueras.'],
+  comedy: ['Et toi, ça t’est déjà arrivé ?', 'Tu connais quelqu’un à qui c’est arrivé ?'],
+  mysteres: ['Tu avais trouvé la solution avant {hero} ?', 'Tu avais repéré l’indice à temps ?'],
+  etsi: ['Et toi, qu’est-ce que tu ferais à sa place ?', 'Et toi, tu aimerais vivre dans ce monde-là ?'],
+  facts: [],
+  motivation: ['Et toi, qu’est-ce que tu refuses d’abandonner ?', 'Quel petit pas vas-tu faire aujourd’hui ?'],
+};
+
+export const BEAT_TYPES = ['hook', 'setup', 'development', 'escalation', 'reveal', 'conclusion'];
+
+/** Émotion d'une scène → animation du personnage principal + expression. */
+export const EMOTIONS = {
+  neutral: ['idle', 'neutral'], happy: ['idle', 'happy'], sad: ['sad', 'sad'], angry: ['angry', 'angry'],
+  surprise: ['surprise', 'surprised'], think: ['think', 'thinking'], laugh: ['laugh', 'laughing'], scared: ['surprise', 'scared'],
+  run: ['run', 'surprised'], walk: ['walk', 'neutral'], point: ['point', 'neutral'], talk: ['talk', 'neutral'],
+  wave: ['wave', 'happy'], jump: ['jump', 'happy'], fall: ['fall', 'scared'], sit: ['sit', 'neutral'], enter: ['enter', 'happy'],
+};

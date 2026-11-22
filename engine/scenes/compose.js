@@ -9,7 +9,7 @@ import { getPalette } from './palettes.js';
 import { actorStateAt } from '../animation/engine.js';
 import { cameraAt, cameraTransform } from '../animation/camera.js';
 import { applyTransition, TRANSITION_DURATION } from '../animation/transitions.js';
-import { renderAnimatedText } from '../animation/text.js';
+import { renderAnimatedText, escapeXml } from '../animation/text.js';
 import { renderCharacterGroup } from '../characters/render.js';
 import { BASE_HEIGHT } from '../characters/skeleton.js';
 import { CLIPS } from '../animation/clips.js';
@@ -77,7 +77,7 @@ export function planScene(scene, layout) {
       // Une marche ou une course traverse le centre de l'écran.
       startX = x - facing * Math.min(clip.speed * layout.charScale * dur * 0.5, layout.width * 0.3);
     }
-    return { character_id: id, x: startX, facing, track, speaking: speaking[id] || [] };  });
+    return { character_id: id, x: startX, facing, track, speaking: speaking[id] || [], expression: i === 0 ? scene.expression : undefined };  });
 }
 
 function propSlots(scene, actors, layout) {
@@ -140,8 +140,23 @@ export function renderSceneContent(scene, characters, t, layout, { style = 'clas
 export function renderSceneSubtitle(scene, t, layout) {
   if (!scene.subtitles) return '';
   const w = layout.width;
+  if (scene.subtitle_style === 'hook') {
+    // Le hook s'affiche en grand, en haut, dès la première image (aucune introduction).
+    return renderAnimatedText(scene.subtitles, { x: w / 2, y: layout.titleY + w * 0.08, t: t + 0.15, style: 'pop', size: Math.round(w * 0.075),
+      highlight: scene.highlight || [], maxChars: layout.vertical ? 18 : 36, box: true });
+  }
   return renderAnimatedText(scene.subtitles, { x: w / 2, y: layout.subtitleY, t, style: 'pop', size: Math.round(w * 0.062),
     highlight: scene.highlight || [], maxChars: layout.vertical ? 22 : 40 });
+}
+
+/** Étiquette discrète « Histoire inventée » / « Scénario imaginaire » pour distinguer fiction et faits. */
+export function renderLabel(label, layout) {
+  if (!label) return '';
+  const w = layout.width;
+  const size = Math.round(w * 0.03);
+  const pw = label.length * size * 0.56 + size * 1.4;
+  const x = Math.round(w * 0.04), y = Math.round(layout.height * 0.035);
+  return `<g opacity="0.85"><rect x="${x}" y="${y}" width="${pw.toFixed(0)}" height="${Math.round(size * 1.7)}" rx="${Math.round(size * 0.85)}" fill="rgba(0,0,0,0.55)"/><text x="${(x + pw / 2).toFixed(0)}" y="${(y + size * 0.88).toFixed(0)}" text-anchor="middle" dominant-baseline="middle" font-family="Fredoka" font-weight="600" font-size="${size}" fill="#ffffff">${escapeXml(label)}</text></g>`;
 }
 
 /** Image SVG complète du storyboard au temps global `time`. */
@@ -166,5 +181,6 @@ export function renderFrame(storyboard, characters, time, { width = 1080, height
     }
   }
   if (showSubtitles) content += renderSceneSubtitle(cur.scene, local, layout);
+  content += renderLabel(storyboard.label, layout);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="${width}" height="${height}" fill="#000"/>${content}</svg>`;
 }

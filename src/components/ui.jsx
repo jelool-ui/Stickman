@@ -64,7 +64,7 @@ export function Button({ variant = 'default', children, ...rest }) {
   );
 }
 
-const STATUS = { success: ['Réussie', 'ok'], failed: ['Échouée', 'bad'], running: ['En cours', 'warn'] };
+const STATUS = { success: ['Réussie', 'ok'], failed: ['Échouée', 'bad'], running: ['En cours', 'warn'], storyboard: ['Storyboard prêt', 'info'] };
 export function StatusPill({ status }) {
   const [label, tone] = STATUS[status] || [status, ''];
   return <span className={`pill ${tone}`}>{label}</span>;
@@ -81,6 +81,16 @@ export function Empty({ icon = '📭', title, children }) {
       <div className="empty-icon">{icon}</div>
       <strong>{title}</strong>
       {children && <p>{children}</p>}
+    </div>
+  );
+}
+
+export function ScoreBar({ label, value, max = 5 }) {
+  return (
+    <div className="scorebar">
+      <span>{label}</span>
+      <div className="scorebar-track"><div style={{ width: `${(value / max) * 100}%` }} /></div>
+      <b>{value}</b>
     </div>
   );
 }

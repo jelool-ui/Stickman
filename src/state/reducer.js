@@ -68,6 +68,9 @@ export function reducer(state, action) {
 
     case 'storyboard/set':
       return { ...state, storyboard: action.storyboard };
+    case 'production/storyboard':
+      // Un storyboard généré est enregistré dans l'historique (sert aussi à éviter les doublons).
+      return { ...state, storyboard: action.storyboard, history: [action.entry, ...state.history].slice(0, 500) };
     case 'storyboard/updateScene': {
       if (!state.storyboard) return state;
       const scenes = state.storyboard.scenes.map((s) =>

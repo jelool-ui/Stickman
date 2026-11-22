@@ -117,3 +117,16 @@ input[type=range] { width: 100%; accent-color: var(--accent); min-height: 32px; 
 .player-controls { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 360px; }
 .player-controls input { flex: 1; }
 .anim-stage { display: flex; justify-content: center; }
+
+.hook { border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+.hook:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.hook.best strong { color: var(--accent); }
+.hook p { margin: 0 0 8px; }
+.scores { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; margin-bottom: 8px; }
+.scorebar { display: grid; grid-template-columns: 96px 1fr 22px; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.scorebar-track { height: 6px; background: var(--panel-2); border-radius: 3px; overflow: hidden; }
+.scorebar-track div { height: 100%; background: var(--accent); }
+.scorebar b { color: var(--text); text-align: right; }
+.sources { padding-left: 18px; margin: 0; } .sources a { color: var(--info); }
+.pill.info { color: var(--info); }
+@media (max-width: 400px) { .scores { grid-template-columns: 1fr; } }
