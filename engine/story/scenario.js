@@ -61,7 +61,7 @@ function highlightFor(text, reveal) {
  * Construit le storyboard.
  * options : characters, hook ({ text, family, proposals }), targetDuration, width, height, fps, createdAt
  */
-export function buildStoryboard(idea, { characters, hook, targetDuration = 40, width = 1080, height = 1920, fps = 30, createdAt = null } = {}) {
+export function buildStoryboard(idea, { characters, hook, targetDuration = 40, width = 1080, height = 1920, fps = 30, createdAt = null, showFictionLabel = false } = {}) {
   const profile = CATEGORY_PROFILES[idea.category];
   const { beats, cast, bg, props: seedProps } = beatsForIdea(idea);
   const roles = castRoles(cast, characters);
@@ -136,7 +136,7 @@ export function buildStoryboard(idea, { characters, hook, targetDuration = 40, w
     title: idea.title,
     category: idea.category,
     content_type: profile.contentType,
-    label: profile.label,
+    label: showFictionLabel ? profile.label : null,
     idea_id: idea.id,
     seed_id: idea.seed_id,
     summary: idea.summary,

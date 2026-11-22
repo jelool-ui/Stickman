@@ -45,7 +45,7 @@ export function generateMetadata(sb, { date = new Date().toISOString().slice(0, 
   const lines = [clean(sb.hook?.text || sb.summary || sb.title), '', clean(sb.summary || '')];
   if (sb.content_type === 'fact') {
     lines.push('', '📚 Sources :', ...(sb.sources || []).map((s) => `• ${s.title} — ${s.url}`));
-  } else {
+  } else if (sb.label) {
     lines.push('', sb.content_type === 'hypothetical' ? '🌀 Scénario imaginaire : une hypothèse pour s’amuser, pas une prédiction.' : '🏷️ Histoire inventée : personnages et situations fictifs.');
   }
   const voiceCredit = sb.voice?.provider === 'piper' ? VOICE_MODELS['fr_FR-siwis-medium'].credit.replace('Voix :', 'Voix de synthèse :') : sb.voice?.provider === 'espeak' ? 'Voix de synthèse : eSpeak NG.' : null;

@@ -29,6 +29,8 @@ export const DEFAULT_SETTINGS = {
   schedule: 'manual',
   allowedCategories: CATEGORIES.map((c) => c.id),
   category: AUTO_MIX,
+  // Étiquette « Histoire inventée » / « Scénario imaginaire » à l'image et dans la description (désactivée).
+  showFictionLabel: false,
 };
 
 export function validateSettings(s) {

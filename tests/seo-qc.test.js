@@ -34,8 +34,8 @@ describe('SEO YouTube', () => {
     }
   });
   it('signale la fiction et cite les sources des faits', () => {
-    expect(generateMetadata(sbOf('comedy')).description).toMatch(/Histoire inventée/);
-    expect(generateMetadata(sbOf('etsi')).description).toMatch(/Scénario imaginaire/);
+    expect(generateMetadata(sbOf('comedy')).description).not.toMatch(/Histoire inventée/); // désactivé par défaut
+    expect(generateMetadata({ ...sbOf('etsi'), label: 'Scénario imaginaire' }).description).toMatch(/Scénario imaginaire/);
     const facts = storyboardForIdea(factsIdea('animaux', ['koala-sommeil', 'pieuvre-coeurs', 'flamant-rose']), { characters: C }).storyboard;
     const d = generateMetadata(facts).description;
     expect(d).toMatch(/Sources/);

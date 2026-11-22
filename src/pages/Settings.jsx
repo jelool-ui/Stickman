@@ -3,7 +3,7 @@ import { useStore } from '../state/store.jsx';
 import { CATEGORIES, DEFAULT_SETTINGS, validateSettings } from '../../engine/config.js';
 import { RESOLUTIONS, SCHEDULES } from '../../engine/catalog.js';
 import { VOICE_PROVIDERS } from '../../engine/voices.js';
-import { Card, Field, Select, Button, Notice } from '../components/ui.jsx';
+import { Card, Field, Select, Button, Notice, Toggle } from '../components/ui.jsx';
 
 export default function Settings() {
   const { state, dispatch } = useStore();
@@ -41,6 +41,12 @@ export default function Settings() {
         <Field label="Images par seconde">
           <Select value={String(d.fps)} onChange={(x) => set('fps', Number(x))} options={[['24', '24 FPS'], ['30', '30 FPS (recommandé)'], ['60', '60 FPS (rendu 2× plus long)']]} />
         </Field>
+      </Card>
+
+      <Card title="Contenu">
+        <Toggle checked={Boolean(d.showFictionLabel)} onChange={(x) => set('showFictionLabel', x)}
+          label="Afficher « Histoire inventée » / « Scénario imaginaire » sur les vidéos fictives" />
+        <p className="muted small">Désactivé par défaut. Les vidéos de faits gardent toujours leurs sources dans la description.</p>
       </Card>
 
       <Card title="Voix">

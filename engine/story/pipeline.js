@@ -10,14 +10,14 @@ export const MAX_ATTEMPTS = 3; // jamais de boucle infinie
 export const RECENT_WINDOW = 40; // nombre de productions récentes à ne pas répéter
 
 /** Prépare un storyboard pour une idée donnée (hooks + scénario + validation). */
-export function storyboardForIdea(idea, { characters, history = [], targetDuration = 40, format = {}, createdAt = null }) {
+export function storyboardForIdea(idea, { characters, history = [], targetDuration = 40, format = {}, createdAt = null, showFictionLabel = false }) {
   const { cast } = beatsForIdea(idea);
   const roles = castRoles(cast, characters);
   const names = Object.fromEntries(Object.entries(roles).map(([k, c]) => [k, c.name]));
   const recentFamilies = history.slice(0, 10).map((h) => h.hook_family).filter(Boolean);
   const hooks = generateHooks({ ...idea, targetDuration }, names, { recentFamilies });
   const storyboard = buildStoryboard(idea, {
-    characters, targetDuration, createdAt, ...format,
+    characters, targetDuration, createdAt, showFictionLabel, ...format,
     hook: { text: hooks.best.text, family: hooks.best.family, proposals: hooks.proposals },
   });
   const validation = validateStoryboard(storyboard, { characters });
@@ -37,7 +37,7 @@ export async function produceStoryboard({ category = 'auto', idea = null, settin
   if (!CATEGORY_PROFILES[cat]) throw new Error(`Catégorie inconnue : ${cat}`);
   const recent = history.slice(0, RECENT_WINDOW);
   const format = { width: settings.width, height: settings.height, fps: settings.fps };
-  const opts = { characters, history, targetDuration: settings.targetDuration, format, createdAt };
+  const opts = { characters, history, targetDuration: settings.targetDuration, format, createdAt, showFictionLabel: Boolean(settings.showFictionLabel) };
 
   if (idea) {
     const r = storyboardForIdea(idea, opts);

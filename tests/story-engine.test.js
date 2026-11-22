@@ -103,7 +103,7 @@ describe('générateur de scénarios et validation', () => {
     expect(sb.scenes[0].subtitle_style).toBe('hook');
     expect(sb.scenes[0].narration).toBe(sb.hook.text);
     for (const s of sb.scenes) for (const f of ['scene_id', 'duration', 'narration', 'dialogue', 'character_ids', 'background_id', 'animation', 'camera', 'props', 'sound_effects', 'subtitles', 'transition']) expect(s, f).toHaveProperty(f);
-    expect(sb.label).toBe('Histoire inventée');
+    expect(sb.label).toBeNull(); // étiquette de fiction désactivée par défaut
     expect(sb.scenes.at(-1).transition).toBe('cut');
   });
   it('les faits gardent leurs sources et ne sont pas étiquetés fiction', async () => {
@@ -120,21 +120,23 @@ describe('générateur de scénarios et validation', () => {
     broken.scenes[3].animation = 'voler';
     broken.scenes[4].duration = 0.5;
     broken.scenes = broken.scenes.slice(0, 5);
-    broken.label = null;
     const v = validateStoryboard(broken, { characters: C });
     expect(v.ok).toBe(false);
     expect(v.errors.join(' ')).toMatch(/décor inconnu/);
     expect(v.errors.join(' ')).toMatch(/animation inconnue/);
     expect(v.errors.join(' ')).toMatch(/scènes/);
-    expect(v.errors.join(' ')).toMatch(/étiquette/);
     const noSource = { ...structuredClone(sb), content_type: 'fact', sources: [] };
     expect(validateStoryboard(noSource, { characters: C }).errors.join(' ')).toMatch(/sans source/);
   });
-  it('affiche le hook en grand et l’étiquette de fiction à l’image', () => {
+  it("affiche le hook en grand, sans étiquette de fiction par défaut", () => {
     const sb = storyboardForIdea(ideaFromSeed(SEEDS.etsi[0], 'etsi', 0, names), { characters: C }).storyboard;
     const svg = renderFrame(sb, C, 1);
-    expect(svg).toContain('Scénario imaginaire');
     expect(svg).toContain('Et si');
+    expect(svg).not.toContain('Scénario imaginaire');
+  });
+  it("l'étiquette de fiction réapparaît si le réglage est activé", () => {
+    const sb = storyboardForIdea(ideaFromSeed(SEEDS.etsi[0], 'etsi', 0, names), { characters: C, showFictionLabel: true }).storyboard;
+    expect(renderFrame(sb, C, 1)).toContain('Scénario imaginaire');
   });
 });
 

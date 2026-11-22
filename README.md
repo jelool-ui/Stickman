@@ -149,10 +149,10 @@ Musique et effets : 100 % générés par calcul, sans fichier externe ; voir [`a
   La durée suit le texte : aucun silence n'est ajouté pour « remplir », et la parole n'est jamais coupée.
 - **Mix automatique** : la catégorie la moins récemment produite passe en premier.
 - **Faits et fiction** : les catégories *Explainer* et *Facts* n'utilisent **que** des faits vérifiés, chacun avec sa
-  source (page consultée et date). Les histoires inventées affichent l'étiquette « Histoire inventée » ou
-  « Scénario imaginaire » à l'image.
+  source (page consultée et date), indiquée dans la description. Les histoires inventées n'affichent pas de mention
+  « Histoire inventée » (réglage `showFictionLabel`, désactivé par défaut, activable dans **Paramètres**).
 - **Validation** avant rendu : champs obligatoires, décors/animations/objets connus, durées, hook en première scène,
-  sources pour les faits, étiquette pour la fiction.
+  sources pour les faits.
 
 ### Fournisseurs de texte
 

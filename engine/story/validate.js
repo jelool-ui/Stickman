@@ -50,7 +50,6 @@ export function validateStoryboard(sb, { characters = [], limits = LIMITS } = {}
   if (sb.target_duration && total > Math.max(30, sb.target_duration) + 1) W(`durée ${total}s au-delà de la cible (${sb.target_duration}s) : le texte ne peut pas être dit plus vite sans être coupé`);
   if (sb.scenes[0]?.subtitle_style !== 'hook') E('la première scène doit être le hook (aucune introduction)');
   if (sb.content_type === 'fact' && !(sb.sources || []).length) E('contenu factuel sans source');
-  if (sb.content_type !== 'fact' && !sb.label) E('un contenu fictif doit afficher une étiquette (« Histoire inventée » ou « Scénario imaginaire »)');
   if (sb.hook?.proposals && sb.hook.proposals.length !== 3) W(`${sb.hook.proposals.length} propositions de hook au lieu de 3`);
   const types = sb.scenes.map((s) => s.scene_type);
   if (types.length && !types.includes('reveal')) E('aucune scène de révélation');

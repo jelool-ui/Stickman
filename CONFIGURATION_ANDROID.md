@@ -60,8 +60,8 @@ se trouve dans la branche principale **`main`**. Demandez simplement à Claude C
 
 1. Ouvrez l'application **YouTube** → **＋** → **Short** → **Importer** → choisissez le `.mp4`.
 2. Copiez le **titre recommandé** et la **description** depuis `metadata.json`.
-3. Vérifiez la vidéo avant de publier. La description contient déjà les crédits obligatoires (voix) et, selon le
-   cas, les sources ou la mention « Histoire inventée » : gardez-les.
+3. Vérifiez la vidéo avant de publier. La description contient déjà les crédits obligatoires (voix) et, pour les
+   vidéos de faits, les sources : gardez-les.
 
 Le studio ne publie jamais rien tout seul dans cette version.
 

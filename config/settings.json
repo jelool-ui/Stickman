@@ -21,5 +21,6 @@
     "facts",
     "motivation"
   ],
-  "category": "auto"
+  "category": "auto",
+  "showFictionLabel": false
 }
