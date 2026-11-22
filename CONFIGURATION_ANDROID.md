@@ -19,12 +19,14 @@ productions et récupérer les vidéos, et Claude Code pour toute modification d
 > **Run workflow**, utilisez **github.com dans Chrome** (voir étape 3). Si la page s'affiche en version mobile
 > réduite, touchez **⋮ → Version pour ordinateur**.
 
-## 2. Activer les boutons de production (une seule fois)
+## 2. Les boutons de production sont déjà activés
 
 Les boutons « Générer une vidéo » et « Production planifiée » n'apparaissent dans GitHub que lorsque le code du studio
-se trouve dans la branche principale **`main`**. Demandez simplement à Claude Code :
+se trouve dans la branche principale **`main`**. C'est fait depuis le 22 novembre 2026 : vous n'avez rien à faire.
 
-> « Fusionne la branche de travail dans main. »
+Si un jour Claude Code modifie le studio sur une autre branche, demandez-lui simplement :
+
+> « Mets la branche main à jour. »
 
 (Claude Code vous demandera confirmation avant de le faire.)
 
@@ -39,7 +41,7 @@ se trouve dans la branche principale **`main`**. Demandez simplement à Claude C
    - **Nombre de vidéos** : 1 à 3 ;
    - **Durée maximale**, **Style**, **Voix** (laissez `auto`).
 6. Touchez le bouton vert **Run workflow**.
-7. Une ligne jaune 🟡 apparaît : la production est en cours (environ 4 à 6 minutes pour une vidéo).
+7. Une ligne jaune 🟡 apparaît : la production est en cours (environ 2 minutes pour une vidéo, 4 à 5 minutes pour trois).
    Elle devient ✅ verte quand c'est terminé, ❌ rouge en cas de problème.
 
 ## 4. Télécharger les vidéos
@@ -86,7 +88,7 @@ exécutions échouées (et réussies si vous le souhaitez).
 
 | Ce que vous voyez | Que faire |
 |---|---|
-| Pas de bouton **Run workflow** | Le code n'est pas encore dans `main` (étape 2), ou passez Chrome en « Version pour ordinateur ». |
+| Pas de bouton **Run workflow** | Passez Chrome en « Version pour ordinateur » (⋮ en haut à droite). |
 | Exécution ❌ rouge | Touchez-la, puis l'étape en rouge. Copiez le message et collez-le à Claude Code : « Corrige cette erreur ». |
 | Exécution ✅ mais résumé « ⚠️ une partie a échoué » | Une vidéo n'a pas passé le contrôle qualité. Le détail est dans `data/history.json` (dans le ZIP). |
 | « Plus aucune idée nouvelle » | Une catégorie a épuisé ses histoires : choisissez `auto` ou demandez à Claude Code d'ajouter des histoires. |

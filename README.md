@@ -7,8 +7,15 @@ Le projet est **gratuit** : il n'utilise que des logiciels open source (React, V
 Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessaire. Les vidéos sont produites par
 **GitHub Actions** et se téléchargent depuis votre téléphone.
 
-> **État actuel : Phase 7 sur 8 terminée** (automatisation GitHub Actions). La liste à jour est dans la section « Avancement ».
-> Une fonctionnalité n'est marquée ✅ que lorsqu'elle a été testée.
+> **État actuel : les 8 phases sont terminées et testées.** Une fonctionnalité n'est marquée ✅ que lorsqu'elle a été testée.
+
+## Démarrage rapide (depuis un smartphone)
+
+1. Ouvrez `github.com/jelool-ui/Stickman` dans **Chrome** → onglet **Actions** → **Générer une vidéo** → **Run workflow**.
+2. Attendez environ 2 minutes (✅ vert), ouvrez l'exécution, téléchargez le ZIP dans **Artifacts**.
+3. Publiez le `.mp4` sur YouTube Shorts avec le titre et la description de `metadata.json`.
+
+Mode d'emploi détaillé pour Android : [`CONFIGURATION_ANDROID.md`](CONFIGURATION_ANDROID.md).
 
 ---
 
@@ -23,7 +30,7 @@ Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessair
 | 5 | Voix (Piper / eSpeak NG) et sous-titres | ✅ testée (synchronisation mesurée à 100 %) |
 | 6 | Rendu vidéo (resvg + FFmpeg) et contrôle qualité | ✅ testée (vidéo de 30 s, contrôle 19/19) |
 | 7 | Workflows GitHub Actions | ✅ testée sur GitHub (lancement manuel, calendrier, artefacts) |
-| 8 | Finalisation, test de chaque catégorie, docs Android | ⏳ à faire |
+| 8 | Finalisation, test de chaque catégorie, docs Android | ✅ testée (6 catégories, contrôle 19/19) |
 
 ---
 
@@ -123,7 +130,13 @@ Chaque vidéo produit un dossier `output/<date>-<catégorie>-<id>/` :
 Une vidéo qui échoue au contrôle qualité est marquée **échouée** dans `data/history.json`, avec la raison. Le studio
 passe à la suivante sans réessayer en boucle. Un résumé est écrit dans `output/summary.md`.
 
-**Temps mesuré** (4 cœurs) : environ 31 s de calcul pour une vidéo de 30 s (images 15 s, voix 9 s la première fois).
+**Temps mesuré** (4 cœurs, une vidéo de chaque catégorie, 30 à 39 s) : **29 à 37 s de calcul** par vidéo, dont images
+17 à 22 s (rendu parallèle) et voix 5 à 6 s (synthèse parallèle, 0,5 s quand les répliques sont en cache).
+
+**Résultats de la vérification finale** (une vidéo par catégorie) : contrôle qualité 19/19 pour les 6 catégories,
+synchronisation voix ↔ sous-titres 100 %, volume −14,5 à −15,1 LUFS, voix transcrite automatiquement avec 6 à 21 %
+d'erreurs malgré la musique (les erreurs viennent surtout du petit modèle de reconnaissance sur des liaisons comme
+« regarde en haut »).
 
 Musique et effets : 100 % générés par calcul, sans fichier externe ; voir [`assets/AUDIO.md`](assets/AUDIO.md).
 
@@ -211,7 +224,7 @@ au total, dont 38 s de production ; l'installation profite des caches (moins d'u
 
 Sur un dépôt **public**, les minutes GitHub Actions sont gratuites. Sur un dépôt **privé**, le compte gratuit inclut
 un quota mensuel (2 000 minutes à ce jour, selon les conditions de GitHub) : une production d'une vidéo prend
-environ 4 à 6 minutes, installation comprise. Le studio ne consomme rien quand le calendrier est sur « manuel ».
+environ 2 minutes, installation comprise (mesuré : 1 min 40). Le studio ne consomme rien quand le calendrier est sur « manuel ».
 
 ## Configuration des secrets
 

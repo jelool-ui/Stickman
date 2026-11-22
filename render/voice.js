@@ -1,7 +1,7 @@
 // Voix d'un storyboard : génère chaque réplique, mesure sa vraie durée, recalcule les scènes,
 // synchronise bouches et sous-titres, puis assemble une piste voix unique.
 import { spawnSync } from 'node:child_process';
-import { synthesize, detectTtsProviders, chooseProvider, SAMPLE_RATE } from './tts/index.js';
+import { synthesize, detectTtsProviders, chooseProvider, prefetchPiper, SAMPLE_RATE } from './tts/index.js';
 import { timeChunks, collectCues, toSrt } from '../engine/audio/subtitles.js';
 import { DEFAULT_VOICE_PROFILES } from '../engine/voices.js';
 import { estimateSpeechSeconds } from '../engine/scenes/compose.js';
@@ -17,6 +17,25 @@ function profileFor(characterId, characters, profiles, fallback = 'narrator') {
 /** Personnage qui dit la narration à l'écran (le Guide dans Explainer/Facts), sinon voix off. */
 function narratorOnScreen(scene, characters) {
   return scene.character_ids.find((id) => characters.find((c) => c.id === id)?.role === 'narrator') || null;
+}
+
+/** Liste des répliques d'un storyboard avec le profil de voix de chacune (même logique que applyVoices). */
+export function voiceJobs(storyboard, { characters, profiles = DEFAULT_VOICE_PROFILES }) {
+  const jobs = [];
+  for (const scene of storyboard.scenes) {
+    for (const d of scene.dialogue) jobs.push({ text: d.text, profile: profileFor(d.character_id, characters, profiles) });
+    if (scene.narration) {
+      const speaker = narratorOnScreen(scene, characters);
+      jobs.push({ text: scene.narration, profile: speaker ? profileFor(speaker, characters, profiles) : profiles.find((p) => p.id === 'narrator') || profiles[0] });
+    }
+  }
+  return jobs;
+}
+
+/** Génère en parallèle les voix manquantes (si Piper est le moteur retenu). Renvoie le nombre de fichiers créés. */
+export async function prefetchVoices(storyboard, { characters, profiles = DEFAULT_VOICE_PROFILES, preference = 'auto', concurrency = 4 } = {}) {
+  if (chooseProvider(preference, detectTtsProviders()) !== 'piper') return 0;
+  return prefetchPiper(voiceJobs(storyboard, { characters, profiles }), { concurrency });
 }
 
 /**

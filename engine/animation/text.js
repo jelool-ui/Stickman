@@ -6,14 +6,22 @@ export function escapeXml(s) {
 }
 
 /** Coupe un texte en lignes d'au plus maxChars caractères. */
-export function wrapText(text, maxChars = 22) {
-  // Typographie française : « ! ? : ; » restent collés au mot précédent (espace insécable).
+/**
+ * Mots « insécables » à la française : la ponctuation haute (! ? : ;), le guillemet fermant (», ».)
+ * reste collée au mot précédent, le guillemet ouvrant « au mot suivant.
+ */
+export function frenchTokens(text) {
   const words = [];
   for (const w of String(text).split(/\s+/).filter(Boolean)) {
-    if (/^[!?:;»%…]+$/.test(w) && words.length) words[words.length - 1] += '\u00a0' + w;
-    else if (words.length && words[words.length - 1] === '«') words[words.length - 1] += '\u00a0' + w;
+    if (/^[!?:;»%…]+[.,!?…]*$/.test(w) && words.length) words[words.length - 1] += '\u00a0' + w;
+    else if (words.length && /«$/.test(words[words.length - 1])) words[words.length - 1] += '\u00a0' + w;
     else words.push(w);
   }
+  return words;
+}
+
+export function wrapText(text, maxChars = 22) {
+  const words = frenchTokens(text);
   const lines = [];
   let line = '';
   for (const w of words) {

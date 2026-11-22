@@ -1,9 +1,9 @@
 // Sous-titres : découpage en blocs lisibles (2 lignes maximum), synchronisation sur l'audio réel, format SRT.
-import { wrapText } from '../animation/text.js';
+import { wrapText, frenchTokens } from '../animation/text.js';
 
 /** Découpe un texte en blocs d'au plus maxChars caractères, en coupant de préférence après la ponctuation. */
 export function chunkText(text, maxChars = 42) {
-  const words = String(text).split(/\s+/).filter(Boolean);
+  const words = frenchTokens(text);
   const chunks = [];
   let cur = [];
   const len = (arr) => arr.join(' ').length;
@@ -11,7 +11,7 @@ export function chunkText(text, maxChars = 42) {
     if (cur.length && len([...cur, w]) > maxChars) { chunks.push(cur.join(' ')); cur = []; }
     cur.push(w);
     // Coupe naturelle après une fin de phrase quand le bloc est déjà bien rempli.
-    if (/[.!?…]$/.test(w) && len(cur) > maxChars * 0.45) { chunks.push(cur.join(' ')); cur = []; }
+    if (/[.!?…»]$/.test(w) && len(cur) > maxChars * 0.45) { chunks.push(cur.join(' ')); cur = []; }
   }
   if (cur.length) {
     // Évite un dernier bloc d'un seul petit mot.

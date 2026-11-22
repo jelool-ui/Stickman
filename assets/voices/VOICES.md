@@ -48,6 +48,12 @@ Tous les personnages utilisent la même voix de base, de bonne qualité, avec un
 | Secondaire masculin | 0,72 | 0,98 |
 | Secondaire féminin | 1,08 | 1,02 |
 
+## Voix déterministe
+
+Par défaut, Piper ajoute une petite variation aléatoire : deux synthèses d'une même phrase donnent des fichiers
+différents. Le studio désactive cette variation (`--noise-scale 0 --noise-w-scale 0`) pour que **la même vidéo ait
+toujours exactement la même voix**. Intelligibilité mesurée identique dans les trois réglages testés (2 % d'erreurs).
+
 ## Logiciels
 
 - **Piper** 1.8 (`pip install piper-tts`), licence GPL-3.0 : le logiciel est exécuté, il n'est pas redistribué ; l'audio produit n'est pas soumis à la GPL.

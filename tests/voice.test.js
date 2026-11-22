@@ -121,3 +121,34 @@ describe.skipIf(!hasPiper && !hasEspeak)('production complète', () => {
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }, 120000);
 });
+
+describe.skipIf(!hasPiper)('génération vocale parallèle', () => {
+  it('produit exactement les mêmes fichiers que la génération séquentielle', async () => {
+    const { prefetchPiper, synthesize: synth } = await import('../render/tts/index.js');
+    const { readFileSync } = await import('node:fs');
+    const dirA = mkdtempSync(path.join(tmpdir(), 'pa-')), dirB = mkdtempSync(path.join(tmpdir(), 'pb-'));
+    try {
+      const jobs = [{ text: 'Il pousse. Il tire. Rien ne bouge.', profile: P[1] }, { text: 'Max… c’est une porte coulissante.', profile: P[3] }];
+      expect(await prefetchPiper(jobs, { cacheDir: dirA, concurrency: 2 })).toBe(2);
+      for (const j of jobs) {
+        const a = synth(j.text, j.profile, { provider: 'piper', cacheDir: dirA });
+        expect(a.cached).toBe(true);
+        const b = synth(j.text, j.profile, { provider: 'piper', cacheDir: dirB });
+        expect(b.cached).toBe(false);
+        expect(readFileSync(a.file).equals(readFileSync(b.file))).toBe(true);
+      }
+    } finally { rmSync(dirA, { recursive: true, force: true }); rmSync(dirB, { recursive: true, force: true }); }
+  }, 60000);
+});
+
+describe.skipIf(!hasPiper)('voix déterministe', () => {
+  it('deux synthèses de la même phrase donnent exactement le même fichier', async () => {
+    const { readFileSync } = await import('node:fs');
+    const dirA = mkdtempSync(path.join(tmpdir(), 'da-')), dirB = mkdtempSync(path.join(tmpdir(), 'db-'));
+    try {
+      const a = synthesize('Le même texte, la même voix.', P[0], { provider: 'piper', cacheDir: dirA });
+      const b = synthesize('Le même texte, la même voix.', P[0], { provider: 'piper', cacheDir: dirB });
+      expect(readFileSync(a.file).equals(readFileSync(b.file))).toBe(true);
+    } finally { rmSync(dirA, { recursive: true, force: true }); rmSync(dirB, { recursive: true, force: true }); }
+  });
+});

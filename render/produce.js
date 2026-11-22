@@ -3,7 +3,7 @@
 import { mkdirSync, writeFileSync, rmSync, renameSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
-import { applyVoices, buildVoiceTrack, storyboardSrt } from './voice.js';
+import { applyVoices, buildVoiceTrack, storyboardSrt, prefetchVoices } from './voice.js';
 import { buildSfxTrack, buildMusicTrack, mixAudio } from './audio/mix.js';
 import { encodeStoryboardParallel } from './parallel.js';
 import { renderThumbnail } from './thumbnail.js';
@@ -25,10 +25,11 @@ export async function produceVideo(storyboard, { characters, profiles, outDir, v
   const tmp = (f) => path.join(outDir, f);
 
   step('voix'); log('🎙️  Voix…');
+  const prefetched = await prefetchVoices(storyboard, { characters, profiles, preference: voicePreference });
   const { storyboard: sb0, segments, report: voiceReport } = applyVoices(storyboard, { characters, profiles, preference: voicePreference });
   const sb = { ...sb0, style: style || storyboard.style || 'classic' };
   for (const w of voiceReport.warnings) log(`   ⚠️  ${w}`);
-  log(`   ${voiceReport.provider} : ${voiceReport.generated} générée(s), ${voiceReport.cached} en cache, durée ${sb.duration} s`);
+  log(`   ${voiceReport.provider} : ${prefetched + voiceReport.generated} réplique(s) générée(s), ${Math.max(0, voiceReport.cached - prefetched)} déjà en cache, durée ${sb.duration} s`);
   buildVoiceTrack(segments, sb.duration, tmp('voice.wav'));
   done('voix');
 

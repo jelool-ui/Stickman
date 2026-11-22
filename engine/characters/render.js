@@ -153,7 +153,7 @@ export function renderCharacterGroup(character, opts = {}) {
     '</g>',
     limb(j.shoulder, j.elbowR, j.handR),
     neckAccessory(a.accessory, j.neck, j.shoulder, r, accent, stroke, sw),
-    held ? `<g transform="translate(${P(j.handR)})">${held}</g>` : '',
+    held && j.handR[1] > j.shoulder[1] ? `<g transform="translate(${P(j.handR)})">${held}</g>` : '',
   ];
   const sx = Math.abs(facing) < 0.05 ? 0.05 * Math.sign(facing || 1) : facing;
   return `<g transform="translate(${n(x)} ${n(y)}) scale(${n(scale * sx)} ${n(scale)})"${opacity < 1 ? ` opacity="${n(opacity)}"` : ''}>${parts.join('')}</g>`;
