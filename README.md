@@ -7,7 +7,7 @@ Le projet est **gratuit** : il n'utilise que des logiciels open source (React, V
 Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessaire. Les vidéos sont produites par
 **GitHub Actions** et se téléchargent depuis votre téléphone.
 
-> **État actuel : Phase 1 sur 8 terminée** (initialisation). La liste à jour est dans la section « Avancement ».
+> **État actuel : Phase 2 sur 8 terminée** (interface). La liste à jour est dans la section « Avancement ».
 > Une fonctionnalité n'est marquée ✅ que lorsqu'elle a été testée.
 
 ---
@@ -17,7 +17,7 @@ Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessair
 | Phase | Contenu | État |
 |---|---|---|
 | 1 | Audit, architecture, initialisation, diagnostic | ✅ testée |
-| 2 | Interface : tableau de bord et 8 pages | ⏳ à faire |
+| 2 | Interface : tableau de bord et 8 pages | ✅ testée (mobile 384 px) |
 | 3 | Personnages SVG, expressions, animations | ⏳ à faire |
 | 4 | Idées, hooks, scénarios, storyboard JSON | ⏳ à faire |
 | 5 | Voix (Piper / eSpeak NG) et sous-titres | ⏳ à faire |
@@ -32,9 +32,17 @@ Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessair
 ```
 Stickman/
 ├── index.html, vite.config.js   Interface web (React + Vite)
-├── src/                          Pages et composants de l'interface
+├── src/
+│   ├── pages/                    Les 8 pages (Dashboard, Vidéos, Idées, Storyboard, Personnages, Voix, Historique, Paramètres)
+│   ├── components/ui.jsx         Composants réutilisables (cartes, champs, boutons…)
+│   └── state/                    État global (fonctions pures) + sauvegarde dans le navigateur
 ├── engine/                       Moteur partagé navigateur + Node (sans dépendance système)
-│   └── config.js                 Catégories, réglages par défaut, validation
+│   ├── config.js                 Catégories, réglages par défaut, validation
+│   ├── catalog.js                Animations, expressions, décors, caméras, transitions, styles
+│   ├── characters/               Bibliothèque de personnages + dessin SVG
+│   ├── voices.js                 Profils vocaux
+│   ├── history.js                Statistiques de production
+│   └── samples/                  Exemples (storyboard de démonstration)
 ├── render/                       Côté Node uniquement : rendu SVG→PNG, FFmpeg, voix, contrôle qualité
 │   └── environment.js            Détection réelle des outils installés
 ├── scripts/                      Commandes en ligne (doctor, production…)
@@ -63,7 +71,8 @@ Prérequis : Node.js 20 ou plus, FFmpeg avec libx264.
 ```bash
 npm install        # installe les dépendances
 npm run doctor     # vérifie FFmpeg, resvg, Piper, eSpeak NG
-npm test           # lance les tests
+npm test           # tests unitaires
+npm run test:ui    # test de l'interface dans un vrai navigateur, largeur smartphone
 npm run dev        # démarre l'interface sur http://localhost:5173
 ```
 

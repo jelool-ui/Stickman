@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "doctor": "node scripts/doctor.js"
+    "doctor": "node scripts/doctor.js",
+    "test:ui": "vite build && node scripts/ui-smoke.mjs"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",
