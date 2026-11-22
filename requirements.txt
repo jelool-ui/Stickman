@@ -1,0 +1,2 @@
+# Synthèse vocale locale (gratuite). Utilisé par GitHub Actions et par l'environnement Claude Code.
+piper-tts==1.8.0

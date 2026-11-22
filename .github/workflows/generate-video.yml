@@ -1,0 +1,51 @@
+# Lancement MANUEL d'une production : onglet Actions → « Générer une vidéo » → Run workflow.
+name: Générer une vidéo
+
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: Catégorie
+        type: choice
+        default: auto
+        options: [auto, explainer, comedy, mysteres, etsi, facts, motivation]
+      count:
+        description: Nombre de vidéos (3 au maximum)
+        type: choice
+        default: '1'
+        options: ['1', '2', '3']
+      duration:
+        description: Durée maximale (secondes)
+        type: choice
+        default: '40'
+        options: ['30', '40', '45', '50', '60']
+      style:
+        description: Style visuel
+        type: choice
+        default: classic
+        options: [classic, night, comic]
+      voice:
+        description: Voix
+        type: choice
+        default: auto
+        options: [auto, piper, espeak, none]
+
+permissions:
+  contents: read
+
+# Une seule production à la fois (manuelle ou planifiée) : la suivante attend son tour.
+concurrency:
+  group: stick-studio-production
+  cancel-in-progress: false
+
+jobs:
+  production:
+    uses: ./.github/workflows/_production.yml
+    with:
+      category: ${{ inputs.category }}
+      count: ${{ inputs.count }}
+      duration: ${{ inputs.duration }}
+      style: ${{ inputs.style }}
+      voice: ${{ inputs.voice }}
+      retention_days: 7
+    secrets: inherit

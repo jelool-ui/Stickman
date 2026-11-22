@@ -1,0 +1,88 @@
+# Production réutilisable, appelée par generate-video.yml (manuel) et scheduled-production.yml (calendrier).
+name: Production (commune)
+
+on:
+  workflow_call:
+    inputs:
+      category: { type: string, default: auto }
+      count: { type: string, default: '1' }
+      duration: { type: string, default: '40' }
+      style: { type: string, default: classic }
+      voice: { type: string, default: auto }
+      retention_days: { type: number, default: 7 }
+
+permissions:
+  contents: read
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-studio
+
+      # L'historique (anti-doublons) est conservé d'une exécution à l'autre dans le cache GitHub,
+      # sans donner au workflow le droit d'écrire dans le dépôt.
+      - name: Restaurer l'historique
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            data/history.json
+            data/ideas-history.json
+          key: studio-data-${{ github.run_id }}
+          restore-keys: studio-data-
+
+      - name: Produire les vidéos
+        id: produce
+        timeout-minutes: 35
+        env:
+          CATEGORY: ${{ inputs.category }}
+          COUNT: ${{ inputs.count }}
+          DURATION: ${{ inputs.duration }}
+          STYLE: ${{ inputs.style }}
+          VOICE: ${{ inputs.voice }}
+          # Facultatif et payant : utilisé seulement si la variable STICK_TEXT_PROVIDER vaut « claude ».
+          STICK_TEXT_PROVIDER: ${{ vars.STICK_TEXT_PROVIDER }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          set +e
+          node scripts/produce.js --category "$CATEGORY" --count "$COUNT" --duration "$DURATION" --style "$STYLE" --voice "$VOICE"
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Sauvegarder l'historique
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            data/history.json
+            data/ideas-history.json
+          key: studio-data-${{ github.run_id }}
+
+      - name: Envoyer les vidéos (artefacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: videos-${{ github.run_number }}
+          path: |
+            output/**/*.mp4
+            output/**/*.srt
+            output/**/*.png
+            output/**/*.json
+            output/summary.md
+            data/history.json
+          retention-days: ${{ inputs.retention_days }}
+          if-no-files-found: warn
+
+      - name: Verdict
+        if: always()
+        env:
+          CODE: ${{ steps.produce.outputs.code }}
+        run: |
+          case "$CODE" in
+            0) echo "✅ Toutes les vidéos ont réussi le contrôle qualité." ;;
+            3) echo "::warning::Une partie des vidéos a échoué : voir le résumé et data/history.json." ;;
+            *) echo "::error::Aucune vidéo n'a réussi (code $CODE). Voir le résumé et les journaux."; exit 1 ;;
+          esac

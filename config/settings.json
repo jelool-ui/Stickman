@@ -1,0 +1,25 @@
+{
+  "language": "fr",
+  "format": "vertical",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "minDuration": 30,
+  "maxDuration": 60,
+  "targetDuration": 40,
+  "videoCodec": "libx264",
+  "audioCodec": "aac",
+  "voiceProvider": "auto",
+  "videosPerRun": 1,
+  "maxVideosPerRun": 3,
+  "schedule": "manual",
+  "allowedCategories": [
+    "explainer",
+    "comedy",
+    "mysteres",
+    "etsi",
+    "facts",
+    "motivation"
+  ],
+  "category": "auto"
+}

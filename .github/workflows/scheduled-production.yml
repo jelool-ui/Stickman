@@ -1,0 +1,53 @@
+# Production AUTOMATIQUE selon le calendrier défini dans config/settings.json (« schedule »).
+# Le déclencheur tourne chaque jour, mais ne produit que si le calendrier le prévoit :
+#   manual (par défaut) = jamais · daily = chaque jour · 3-per-week = lun/mer/ven · weekly = lundi
+# Remarque : GitHub n'exécute les tâches planifiées que sur la branche principale et les met en pause
+# après 60 jours sans activité sur le dépôt.
+name: Production planifiée
+
+on:
+  schedule:
+    - cron: '23 5 * * *' # chaque jour vers 06 h 23 (heure de Paris, hiver) — GitHub peut décaler de quelques minutes
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Produire maintenant, même si le calendrier ne le prévoit pas aujourd'hui
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stick-studio-production
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run: ${{ steps.decide.outputs.run }}
+      count: ${{ steps.decide.outputs.count }}
+      category: ${{ steps.decide.outputs.category }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Calendrier du jour
+        id: decide
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          if [ "$FORCE" = "true" ]; then node scripts/should-run.js --force; else node scripts/should-run.js; fi
+
+  production:
+    needs: plan
+    if: needs.plan.outputs.run == 'true'
+    uses: ./.github/workflows/_production.yml
+    with:
+      category: ${{ needs.plan.outputs.category }}
+      count: ${{ needs.plan.outputs.count }}
+      retention_days: 7
+    secrets: inherit

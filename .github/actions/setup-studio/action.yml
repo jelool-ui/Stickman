@@ -1,0 +1,35 @@
+name: Installer Stick Studio AI
+description: Node, FFmpeg, eSpeak NG, Piper et la voix autorisée (avec caches).
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: npm
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: pip
+        cache-dependency-path: requirements.txt
+    - name: Outils système (FFmpeg, eSpeak NG)
+      shell: bash
+      run: |
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq ffmpeg espeak-ng > /dev/null
+    - name: Dépendances
+      shell: bash
+      run: |
+        npm ci --no-audit --no-fund
+        pip install --quiet -r requirements.txt
+    - name: Cache des modèles vocaux
+      uses: actions/cache@v4
+      with:
+        path: assets/voices/*.onnx*
+        key: voices-${{ hashFiles('scripts/setup-voices.js') }}
+    - name: Modèle vocal autorisé (vérification SHA-256)
+      shell: bash
+      run: node scripts/setup-voices.js
+    - name: Diagnostic
+      shell: bash
+      run: npm run doctor
