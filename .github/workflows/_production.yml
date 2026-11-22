@@ -19,13 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-studio
 
       # L'historique (anti-doublons) est conservé d'une exécution à l'autre dans le cache GitHub,
       # sans donner au workflow le droit d'écrire dans le dépôt.
       - name: Restaurer l'historique
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             data/history.json
@@ -54,7 +54,7 @@ jobs:
 
       - name: Sauvegarder l'historique
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             data/history.json
@@ -63,7 +63,7 @@ jobs:
 
       - name: Envoyer les vidéos (artefacts)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: videos-${{ github.run_number }}
           path: |

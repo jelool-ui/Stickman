@@ -181,10 +181,79 @@ ou d'activer le fournisseur facultatif.
 Vous travaillez depuis un smartphone : vous n'avez pas besoin de taper ces commandes vous-même.
 Demandez simplement à Claude Code de les lancer.
 
-## Configuration GitHub, secrets, lancement manuel et automatique
+## Configuration GitHub
 
-Ces sections seront complétées en Phase 7, une fois les workflows créés et testés.
-Aucun secret n'est nécessaire pour le fonctionnement de base.
+Les vidéos sont produites par **GitHub Actions**, sur des machines prêtées par GitHub le temps d'une production
+(ce n'est pas un serveur permanent). Trois workflows sont fournis dans `.github/workflows/` :
+
+| Workflow | Déclenchement | Rôle |
+|---|---|---|
+| **Générer une vidéo** (`generate-video.yml`) | Bouton manuel | Produit 1 à 3 vidéos avec les options choisies |
+| **Production planifiée** (`scheduled-production.yml`) | Chaque jour vers 6 h 23 (heure de Paris en hiver) + bouton manuel | Produit seulement si le calendrier de `config/settings.json` le prévoit |
+| **Tests** (`ci.yml`) | À chaque envoi de code | Tests automatiques + petite vidéo de contrôle en 540×960 |
+
+Garde-fous intégrés :
+
+- **Une seule production à la fois** : une production lancée pendant une autre attend son tour.
+- **Délais maximum** : 45 minutes par production, 35 minutes pour l'étape de rendu.
+- **Jamais de génération infinie** : 3 vidéos au maximum par exécution, aucune nouvelle tentative automatique.
+- **Permissions minimales** : lecture seule du dépôt. L'historique anti-doublons est conservé dans le cache GitHub.
+- **Artefacts conservés 7 jours** (3 jours pour les vidéos de contrôle), puis supprimés automatiquement.
+- **Caches** : dépendances npm et pip, modèle vocal (vérifié par empreinte SHA-256).
+
+**Important : les workflows manuels et planifiés n'apparaissent qu'une fois le code fusionné dans la branche
+principale `main`.** C'est une règle de GitHub.
+
+### Coût
+
+Sur un dépôt **public**, les minutes GitHub Actions sont gratuites. Sur un dépôt **privé**, le compte gratuit inclut
+un quota mensuel (2 000 minutes à ce jour, selon les conditions de GitHub) : une production d'une vidéo prend
+environ 4 à 6 minutes, installation comprise. Le studio ne consomme rien quand le calendrier est sur « manuel ».
+
+## Configuration des secrets
+
+**Aucun secret n'est nécessaire** pour le fonctionnement de base (voix Piper, musique et histoires intégrées).
+
+Seul le fournisseur de texte facultatif et **payant** (API Claude) en utilise un :
+
+1. GitHub → dépôt → **Settings** → **Secrets and variables** → **Actions**.
+2. Onglet **Secrets** → *New repository secret* → nom `ANTHROPIC_API_KEY`, valeur : votre clé.
+3. Onglet **Variables** → *New repository variable* → nom `STICK_TEXT_PROVIDER`, valeur `claude`.
+
+Pour revenir au mode gratuit, supprimez la variable `STICK_TEXT_PROVIDER`. Les secrets sont masqués dans les
+journaux par GitHub et ne sont jamais écrits dans le code.
+
+## Lancement manuel
+
+1. GitHub → dépôt → onglet **Actions** → **Générer une vidéo** → bouton **Run workflow**.
+2. Choisir la catégorie (ou `auto`), le nombre de vidéos, la durée, le style et la voix.
+3. Cliquer sur **Run workflow**. La production dure quelques minutes ; un résumé s'affiche à la fin.
+
+## Lancement automatique
+
+Modifier `config/settings.json` (Claude Code peut le faire pour vous), par exemple :
+
+```json
+"schedule": "3-per-week",
+"videosPerRun": 1,
+"category": "auto"
+```
+
+Valeurs de `schedule` : `manual` (aucune production automatique, par défaut), `daily`, `3-per-week`
+(lundi, mercredi, vendredi), `weekly` (lundi). La page **Paramètres** de l'interface permet de choisir ces valeurs
+puis de les copier en JSON.
+
+GitHub met les tâches planifiées en pause après 60 jours sans activité sur le dépôt : relancez-les depuis l'onglet
+Actions si nécessaire.
+
+## Téléchargement des vidéos
+
+1. Onglet **Actions** → cliquer sur l'exécution terminée.
+2. En bas de la page, section **Artifacts** → `videos-<numéro>` → téléchargement d'un fichier ZIP.
+3. Le ZIP contient, pour chaque vidéo : le MP4, le fichier SRT, la miniature, `metadata.json` (titres, description,
+   hashtags) et le rapport du contrôle qualité.
+
+Les artefacts sont supprimés après 7 jours : pensez à télécharger les vidéos avant.
 
 ## Dépannage
 
@@ -194,6 +263,10 @@ Aucun secret n'est nécessaire pour le fonctionnement de base.
 | ⚠️ piper | `pip install piper-tts` puis `node scripts/setup-voices.js`. Sans Piper, eSpeak NG prend le relais. |
 | ⚠️ espeak | `sudo apt-get install espeak-ng` (facultatif). Sans aucun moteur, la vidéo est produite sans voix et le rapport le signale. |
 | Page blanche dans le navigateur | Lancer `npm run build` et lire l'erreur affichée. |
+| Le bouton « Run workflow » n'apparaît pas | Les workflows doivent être dans la branche `main`. |
+| La production planifiée ne produit rien | Vérifier `schedule` dans `config/settings.json` (« manual » = aucune production). |
+| Exécution en échec | Ouvrir l'exécution → résumé et étape en rouge. Le détail de chaque vidéo est dans `data/history.json` (artefact). |
+| « Plus aucune idée nouvelle » | La bibliothèque d'une catégorie est épuisée : ajouter des histoires ou passer en `auto`. |
 
 ## Licence et contenus
 

@@ -3,11 +3,11 @@ description: Node, FFmpeg, eSpeak NG, Piper et la voix autorisée (avec caches).
 runs:
   using: composite
   steps:
-    - uses: actions/setup-node@v4
+    - uses: actions/setup-node@v5
       with:
         node-version: 22
         cache: npm
-    - uses: actions/setup-python@v5
+    - uses: actions/setup-python@v6
       with:
         python-version: '3.12'
         cache: pip
@@ -23,7 +23,7 @@ runs:
         npm ci --no-audit --no-fund
         pip install --quiet -r requirements.txt
     - name: Cache des modèles vocaux
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: assets/voices/*.onnx*
         key: voices-${{ hashFiles('scripts/setup-voices.js') }}

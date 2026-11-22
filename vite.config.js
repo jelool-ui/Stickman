@@ -9,5 +9,7 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.js'],
     environment: 'node',
+    // Machines GitHub plus lentes et cache vocal vide au premier passage : marge confortable.
+    testTimeout: 30000,
   },
 });
