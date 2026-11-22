@@ -28,10 +28,12 @@ export function beatsForIdea(idea) {
   if (idea.category === 'facts') {
     const facts = idea.fact_ids.map((id) => FACTS.find((f) => f.id === id));
     const beats = [];
+    const rotation = FACT_THEMES[facts[0]?.theme || 'monde'].rotation || [];
     facts.forEach((f, i) => {
       const last = i === facts.length - 1;
-      beats.push({ t: i === 0 ? 'setup' : last ? 'escalation' : 'development', n: `${['Un', 'Deux', 'Trois'][i]} : ${f.fact[0].toLowerCase()}${f.fact.slice(1)}`, e: 'surprise', who: ['hero', 'guide'] });
-      beats.push({ t: last ? 'reveal' : 'development', n: f.detail, e: 'talk', who: ['guide', 'hero'] });
+      const bgFact = rotation[i % rotation.length];
+      beats.push({ t: i === 0 ? 'setup' : last ? 'escalation' : 'development', n: `${['Un', 'Deux', 'Trois'][i]} : ${f.fact[0].toLowerCase()}${f.fact.slice(1)}`, e: 'surprise', who: ['hero', 'guide'], bg: bgFact });
+      beats.push({ t: last ? 'reveal' : 'development', n: f.detail, e: 'talk', who: ['guide', 'hero'], bg: bgFact });
     });
     beats.push({ t: 'conclusion', n: 'Lequel de ces trois faits t’a le plus surpris ? Les sources sont dans la description.', e: 'wave', who: ['guide', 'hero'] });
     const theme = idea.fact_ids.length ? facts[0].theme : 'monde';

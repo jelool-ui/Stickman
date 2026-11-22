@@ -3,9 +3,9 @@
 const W = (page) => ({ title: `Wikipédia — ${decodeURIComponent(page).replace(/_/g, ' ')}`, url: `https://fr.wikipedia.org/wiki/${page}`, checked: '2026-11-22' });
 
 export const FACT_THEMES = {
-  animaux: { label: 'les animaux', bg: 'landscape' },
-  espace: { label: 'l’espace et la nature', bg: 'space' },
-  monde: { label: 'notre monde', bg: 'city' },
+  animaux: { label: 'les animaux', bg: 'landscape', rotation: ['forest', 'abstract', 'landscape'] },
+  espace: { label: 'l’espace et la nature', bg: 'space', rotation: ['abstract', 'landscape', 'space'] },
+  monde: { label: 'notre monde', bg: 'city', rotation: ['street', 'abstract', 'house'] },
 };
 
 export const FACTS = [

@@ -16,7 +16,8 @@
     "doctor": "node scripts/doctor.js",
     "test:ui": "vite build && node scripts/ui-smoke.mjs",
     "render:test": "node scripts/render-test-scene.js",
-    "storyboard": "node scripts/generate-storyboard.js"
+    "storyboard": "node scripts/generate-storyboard.js",
+    "produce": "node scripts/produce.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.12.0",

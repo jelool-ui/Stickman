@@ -105,16 +105,19 @@ describe('voix d’un storyboard', () => {
 });
 
 describe.skipIf(!hasPiper && !hasEspeak)('production complète', () => {
-  it('produit un MP4 avec image, voix et fichier SRT synchronisés', async () => {
+  it('produit un MP4 avec image, voix, musique, SRT, miniature et rapport de contrôle', async () => {
     const dir = mkdtempSync(path.join(tmpdir(), 'prod-'));
     try {
       const r = await produceVideo(sb(), { characters: C, outDir: dir, width: 216, height: 384, fps: 15, log: () => {} });
-      const p = probe(r.video);
+      const p = probe(r.paths.video);
       const v = p.streams.find((x) => x.codec_type === 'video'), a = p.streams.find((x) => x.codec_type === 'audio');
       expect(v).toMatchObject({ codec_name: 'h264', width: 216, height: 384 });
       expect(a.codec_name).toBe('aac');
       expect(Number(p.format.duration)).toBeCloseTo(r.storyboard.duration, 0);
-      expect(spawnSync('cat', [r.srt], { encoding: 'utf8' }).stdout).toMatch(/^1\n00:00:00,200 --> /);
+      expect(r.qcReport.status, JSON.stringify(r.qcReport.failed)).toBe('passed');
+      expect(existsSync(r.paths.thumbnail)).toBe(true);
+      expect(r.metadata.titles).toHaveLength(3);
+      expect(spawnSync('cat', [r.paths.srt], { encoding: 'utf8' }).stdout).toMatch(/^1\n00:00:00,200 --> /);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }, 120000);
 });

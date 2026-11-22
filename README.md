@@ -7,7 +7,7 @@ Le projet est **gratuit** : il n'utilise que des logiciels open source (React, V
 Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessaire. Les vidéos sont produites par
 **GitHub Actions** et se téléchargent depuis votre téléphone.
 
-> **État actuel : Phase 5 sur 8 terminée** (voix et sous-titres). La liste à jour est dans la section « Avancement ».
+> **État actuel : Phase 6 sur 8 terminée** (rendu vidéo complet). La liste à jour est dans la section « Avancement ».
 > Une fonctionnalité n'est marquée ✅ que lorsqu'elle a été testée.
 
 ---
@@ -21,7 +21,7 @@ Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessair
 | 3 | Personnages SVG, expressions, animations | ✅ testée (vidéo de test 1080×1920 rendue) |
 | 4 | Idées, hooks, scénarios, storyboard JSON | ✅ testée (34 histoires, 6 catégories) |
 | 5 | Voix (Piper / eSpeak NG) et sous-titres | ✅ testée (synchronisation mesurée à 100 %) |
-| 6 | Rendu vidéo (resvg + FFmpeg) et contrôle qualité | ⏳ à faire |
+| 6 | Rendu vidéo (resvg + FFmpeg) et contrôle qualité | ✅ testée (vidéo de 30 s, contrôle 19/19) |
 | 7 | Workflows GitHub Actions | ⏳ à faire |
 | 8 | Finalisation, test de chaque catégorie, docs Android | ⏳ à faire |
 
@@ -43,6 +43,7 @@ Stickman/
 │   ├── animation/                17 animations, moteur (interpolation, fondus), caméra, transitions, texte animé
 │   ├── scenes/                   11 décors, 15 objets, 3 styles, composition d'une image complète
 │   ├── audio/                    Sous-titres (découpage, SRT) et préparation du texte pour la voix
+│   ├── seo.js                    Titres, description, hashtags, mots-clés, nom de fichier, miniature
 │   └── story/                    Idées, hooks, scénarios, validation, pipeline
 │       ├── categories.js         Profils des 6 catégories (narration, hooks, décors, sons, rythme)
 │       ├── library/              Histoires originales + base de faits sourcés
@@ -56,7 +57,12 @@ Stickman/
 │   ├── encode.js                 Pixels → MP4 H.264 (FFmpeg, sans fichiers temporaires)
 │   ├── tts/                      Synthèse vocale : Piper → eSpeak NG → sans voix, avec cache
 │   ├── voice.js                  Voix d'un storyboard, timings réels, piste voix
-│   ├── produce.js                Production : voix → sous-titres → images → MP4
+│   ├── audio/                    Synthétiseur, musique originale, effets sonores, mixage
+│   ├── parallel.js               Rendu des images sur plusieurs cœurs (mémoire bornée)
+│   ├── qc.js                     Contrôle qualité automatique + rapport JSON
+│   ├── thumbnail.js              Miniature
+│   ├── youtube/                  Publication YouTube (préparée, désactivée en v1)
+│   ├── produce.js                Production complète d'une vidéo
 │   └── providers/claude.js       Fournisseur IA facultatif (API Claude, payant)
 ├── scripts/                      Commandes en ligne (doctor, production…)
 ├── data/                         Historique des idées et des productions (JSON)
@@ -91,8 +97,35 @@ npm run test:ui    # test de l'interface dans un vrai navigateur, largeur smartp
 npm run dev        # démarre l'interface sur http://localhost:5173
 npm run render:test  # rend une scène de test de 14 s dans output/test-scene.mp4
 npm run storyboard -- --category auto --record   # génère un storyboard validé dans output/<id>/
-node scripts/produce-test.js comedy   # vidéo complète avec voix et sous-titres dans output/test-comedy/
+npm run produce -- --category auto --count 1   # PRODUCTION COMPLÈTE (commande principale)
 ```
+
+## Production complète (résumé)
+
+`npm run produce` enchaîne, pour chaque vidéo : storyboard validé → voix → sous-titres → musique originale → effets
+sonores → images (en parallèle) → mixage → miniature → métadonnées YouTube → contrôle qualité.
+
+Options : `--category auto|explainer|comedy|mysteres|etsi|facts|motivation`, `--count N` (3 au maximum),
+`--duration 30..60`, `--style classic|night|comic`, `--voice auto|piper|espeak|none`.
+
+Chaque vidéo produit un dossier `output/<date>-<catégorie>-<id>/` :
+
+| Fichier | Contenu |
+|---|---|
+| `<nom>.mp4` | Vidéo finale 1080×1920, 30 i/s, H.264 + AAC, sous-titres incrustés |
+| `<nom>.srt` | Sous-titres séparés |
+| `<nom>-miniature.png` | Miniature verticale |
+| `metadata.json` | 3 titres, titre recommandé, description (sources ou mention fiction, crédits), hashtags, mots-clés |
+| `qc-report.json` | Rapport du contrôle qualité (19 contrôles) |
+| `storyboard.json` | Scénario final avec les timings réels |
+| `production-report.json` | Durée de chaque étape, moteur vocal utilisé, effets placés |
+
+Une vidéo qui échoue au contrôle qualité est marquée **échouée** dans `data/history.json`, avec la raison. Le studio
+passe à la suivante sans réessayer en boucle. Un résumé est écrit dans `output/summary.md`.
+
+**Temps mesuré** (4 cœurs) : environ 31 s de calcul pour une vidéo de 30 s (images 15 s, voix 9 s la première fois).
+
+Musique et effets : 100 % générés par calcul, sans fichier externe ; voir [`assets/AUDIO.md`](assets/AUDIO.md).
 
 ## Voix et sous-titres (résumé)
 
