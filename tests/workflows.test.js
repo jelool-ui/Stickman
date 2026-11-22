@@ -29,7 +29,7 @@ describe('workflows GitHub Actions', () => {
     const p = wf('_production.yml');
     expect(p).toMatch(/timeout-minutes: 45/);
     expect(p).toMatch(/retention-days: \$\{\{ inputs.retention_days \}\}/);
-    expect(p).toMatch(/actions\/cache\/restore@v4/);
+    expect(p).toMatch(/actions\/cache\/restore@v5/);
     expect(wf('ci.yml')).toMatch(/retention-days: 3/);
   });
 });
