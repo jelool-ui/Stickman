@@ -7,7 +7,7 @@ Le projet est **gratuit** : il n'utilise que des logiciels open source (React, V
 Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessaire. Les vidéos sont produites par
 **GitHub Actions** et se téléchargent depuis votre téléphone.
 
-> **État actuel : Phase 6 sur 8 terminée** (rendu vidéo complet). La liste à jour est dans la section « Avancement ».
+> **État actuel : Phase 7 sur 8 terminée** (automatisation GitHub Actions). La liste à jour est dans la section « Avancement ».
 > Une fonctionnalité n'est marquée ✅ que lorsqu'elle a été testée.
 
 ---
@@ -22,7 +22,7 @@ Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessair
 | 4 | Idées, hooks, scénarios, storyboard JSON | ✅ testée (34 histoires, 6 catégories) |
 | 5 | Voix (Piper / eSpeak NG) et sous-titres | ✅ testée (synchronisation mesurée à 100 %) |
 | 6 | Rendu vidéo (resvg + FFmpeg) et contrôle qualité | ✅ testée (vidéo de 30 s, contrôle 19/19) |
-| 7 | Workflows GitHub Actions | ⏳ à faire |
+| 7 | Workflows GitHub Actions | ✅ testée sur GitHub (lancement manuel, calendrier, artefacts) |
 | 8 | Finalisation, test de chaque catégorie, docs Android | ⏳ à faire |
 
 ---
@@ -201,8 +201,11 @@ Garde-fous intégrés :
 - **Artefacts conservés 7 jours** (3 jours pour les vidéos de contrôle), puis supprimés automatiquement.
 - **Caches** : dépendances npm et pip, modèle vocal (vérifié par empreinte SHA-256).
 
-**Important : les workflows manuels et planifiés n'apparaissent qu'une fois le code fusionné dans la branche
-principale `main`.** C'est une règle de GitHub.
+**Important : les workflows manuels et planifiés n'apparaissent qu'une fois le code dans la branche principale `main`**
+(règle de GitHub). C'est le cas depuis le 22 novembre 2026.
+
+Mesuré sur GitHub (machine gratuite `ubuntu-latest`) : une production d'une vidéo 1080×1920 prend **environ 1 min 40**
+au total, dont 38 s de production ; l'installation profite des caches (moins d'une minute).
 
 ### Coût
 
