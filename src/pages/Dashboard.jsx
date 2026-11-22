@@ -3,6 +3,8 @@ import { useStore } from '../state/store.jsx';
 import { computeStats, formatDuration } from '../../engine/history.js';
 import { Card, Stat, StatusPill, CategoryTag, Empty, Button, formatDate } from '../components/ui.jsx';
 
+const REPO = 'https://github.com/jelool-ui/Stickman';
+
 export default function Dashboard({ go }) {
   const { state } = useStore();
   const s = computeStats(state.history);
@@ -52,6 +54,15 @@ export default function Dashboard({ go }) {
             ))}
           </ul>
         )}
+      </Card>
+
+      <Card title="Production sur GitHub">
+        <p className="small">Les vidéos MP4 (voix, musique, sous-titres) sont fabriquées par GitHub Actions. Lancez une production ou téléchargez les vidéos terminées :</p>
+        <div className="actions-row">
+          <a className="btn primary" href={`${REPO}/actions/workflows/generate-video.yml`} target="_blank" rel="noreferrer">▶️ Lancer une production</a>
+          <a className="btn" href={`${REPO}/actions`} target="_blank" rel="noreferrer">📥 Vidéos terminées</a>
+        </div>
+        <p className="muted small">Mode d'emploi pas à pas : CONFIGURATION_ANDROID.md</p>
       </Card>
 
       <div className="actions-row">
