@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "doctor": "node scripts/doctor.js",
-    "test:ui": "vite build && node scripts/ui-smoke.mjs"
+    "test:ui": "vite build && node scripts/ui-smoke.mjs",
+    "render:test": "node scripts/render-test-scene.js"
   },
   "dependencies": {
     "@resvg/resvg-js": "^2.6.2",

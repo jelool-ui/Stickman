@@ -7,7 +7,7 @@ Le projet est **gratuit** : il n'utilise que des logiciels open source (React, V
 Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessaire. Les vidéos sont produites par
 **GitHub Actions** et se téléchargent depuis votre téléphone.
 
-> **État actuel : Phase 2 sur 8 terminée** (interface). La liste à jour est dans la section « Avancement ».
+> **État actuel : Phase 3 sur 8 terminée** (personnages et animation). La liste à jour est dans la section « Avancement ».
 > Une fonctionnalité n'est marquée ✅ que lorsqu'elle a été testée.
 
 ---
@@ -18,7 +18,7 @@ Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessair
 |---|---|---|
 | 1 | Audit, architecture, initialisation, diagnostic | ✅ testée |
 | 2 | Interface : tableau de bord et 8 pages | ✅ testée (mobile 384 px) |
-| 3 | Personnages SVG, expressions, animations | ⏳ à faire |
+| 3 | Personnages SVG, expressions, animations | ✅ testée (vidéo de test 1080×1920 rendue) |
 | 4 | Idées, hooks, scénarios, storyboard JSON | ⏳ à faire |
 | 5 | Voix (Piper / eSpeak NG) et sous-titres | ⏳ à faire |
 | 6 | Rendu vidéo (resvg + FFmpeg) et contrôle qualité | ⏳ à faire |
@@ -39,12 +39,16 @@ Stickman/
 ├── engine/                       Moteur partagé navigateur + Node (sans dépendance système)
 │   ├── config.js                 Catégories, réglages par défaut, validation
 │   ├── catalog.js                Animations, expressions, décors, caméras, transitions, styles
-│   ├── characters/               Bibliothèque de personnages + dessin SVG
+│   ├── characters/               Personnages : bibliothèque, squelette articulé, dessin SVG
+│   ├── animation/                17 animations, moteur (interpolation, fondus), caméra, transitions, texte animé
+│   ├── scenes/                   11 décors, 15 objets, 3 styles, composition d'une image complète
 │   ├── voices.js                 Profils vocaux
 │   ├── history.js                Statistiques de production
 │   └── samples/                  Exemples (storyboard de démonstration)
 ├── render/                       Côté Node uniquement : rendu SVG→PNG, FFmpeg, voix, contrôle qualité
-│   └── environment.js            Détection réelle des outils installés
+│   ├── environment.js            Détection réelle des outils installés
+│   ├── frames.js                 SVG → pixels (resvg, police intégrée)
+│   └── encode.js                 Pixels → MP4 H.264 (FFmpeg, sans fichiers temporaires)
 ├── scripts/                      Commandes en ligne (doctor, production…)
 ├── data/                         Historique des idées et des productions (JSON)
 ├── assets/                       Musiques, effets sonores, modèles vocaux (licences documentées)
@@ -74,7 +78,21 @@ npm run doctor     # vérifie FFmpeg, resvg, Piper, eSpeak NG
 npm test           # tests unitaires
 npm run test:ui    # test de l'interface dans un vrai navigateur, largeur smartphone
 npm run dev        # démarre l'interface sur http://localhost:5173
+npm run render:test  # rend une scène de test de 14 s dans output/test-scene.mp4
 ```
+
+## Moteur d'animation (résumé)
+
+- **Squelette articulé** : buste, tête, épaules, coudes, hanches, genoux. Chaque membre bouge indépendamment.
+- **17 animations** : repos, marcher, courir, sauter, parler, réfléchir, montrer, rire, surprise, triste, colère,
+  tomber, saluer, s'asseoir, se retourner, entrer et sortir de scène.
+- **Jamais figé** : respiration, micro-mouvements, clignements des yeux ; la caméra respire légèrement.
+- **Dialogues** : un personnage qui parle bouge la bouche et fait des gestes.
+- **Caméra** : fixe, zoom avant/arrière, panoramique, tremblement, mise au point sur le personnage.
+- **Transitions** : coupe, fondu, glissement gauche/haut, zoom, flash.
+- **Ajouter un décor ou un objet** : `registerBackground()` / `registerProp()` dans `engine/scenes/`, sans toucher au moteur.
+- **Déterministe** : aucun hasard non contrôlé, un même storyboard donne toujours la même vidéo.
+- **Vitesse mesurée** : environ 17 à 25 images/s en 1080 × 1920, soit 1 à 2 minutes de calcul pour 60 s de vidéo.
 
 Vous travaillez depuis un smartphone : vous n'avez pas besoin de taper ces commandes vous-même.
 Demandez simplement à Claude Code de les lancer.

@@ -67,6 +67,21 @@ try {
   // 3.5 + 4 + 4 + 4 = 15.5 s ; la première scène passe à 5 s → 5 + 4 + 4 + 4 = 17.0 s
   await page.waitForFunction(() => document.querySelector('.content').textContent.includes('17.0 s'), null, { timeout: 3000 })
     .catch(() => failures.push('durée totale du storyboard non recalculée'));
+
+  // Personnages : l'aperçu animé bouge réellement
+  await page.goto(`${base}#characters`);
+  await page.click('.chip:has-text("Courir")');
+  const a = await page.innerHTML('.preview-stage');
+  await page.waitForTimeout(250);
+  if (a === (await page.innerHTML('.preview-stage'))) failures.push("aperçu animé du personnage figé");
+
+  // Storyboard : le lecteur avance
+  await page.goto(`${base}#storyboard`);
+  await page.click('.player-controls button');
+  await page.waitForTimeout(800);
+  const pos = Number(await page.inputValue('.player-controls input'));
+  if (!(pos > 0.3)) failures.push(`lecteur du storyboard bloqué (${pos})`);
+  if (shotsDir) await page.screenshot({ path: `${shotsDir}/storyboard-player.png` });
 } finally {
   await browser.close();
   server.kill();
@@ -76,4 +91,4 @@ if (failures.length) {
   console.error('❌ Test interface :\n - ' + failures.join('\n - '));
   process.exit(1);
 }
-console.log(`✅ Test interface : ${Object.keys(pages).length} pages + 4 interactions OK (largeur 384 px)`);
+console.log(`✅ Test interface : ${Object.keys(pages).length} pages + 6 interactions OK (largeur 384 px)`);

@@ -1,3 +1,6 @@
+/* Même police que le rendu vidéo, pour que l'aperçu soit fidèle (Fredoka, licence SIL OFL 1.1). */
+@font-face { font-family: 'Fredoka'; src: url('../assets/fonts/Fredoka_600SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Fredoka'; src: url('../assets/fonts/Fredoka_700Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 :root {
   --bg: #0f1115; --panel: #181b22; --panel-2: #20242d; --text: #eef0f4; --muted: #9aa3b2;
   --accent: #ffcc33; --accent-ink: #1a1400; --border: #2a2f3a;
@@ -108,3 +111,9 @@ input[type=range] { width: 100%; accent-color: var(--accent); min-height: 32px; 
   border: 1px solid var(--border); background: var(--panel-2); font-weight: 600; cursor: pointer; }
 .sheet button span { font-size: 20px; }
 .sheet button.active { border-color: var(--accent); color: var(--accent); }
+
+.player { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.player-screen { border-radius: 12px; overflow: hidden; background: #000; max-width: 100%; box-shadow: 0 6px 24px rgba(0,0,0,.4); }
+.player-controls { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 360px; }
+.player-controls input { flex: 1; }
+.anim-stage { display: flex; justify-content: center; }

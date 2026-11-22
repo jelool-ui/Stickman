@@ -2,6 +2,7 @@ import React from 'react';
 import { useStore } from '../state/store.jsx';
 import { ANIMATIONS, ANIMATION_LABELS, BACKGROUNDS, CAMERAS, TRANSITIONS } from '../../engine/catalog.js';
 import { Card, Field, Select, Empty, Notice, CategoryTag } from '../components/ui.jsx';
+import Player from '../components/Player.jsx';
 
 export default function Storyboard() {
   const { state, dispatch } = useStore();
@@ -21,6 +22,11 @@ export default function Storyboard() {
             <div key={s.scene_id} style={{ flexGrow: s.duration }} title={`Scène ${s.scene_id}`}>{s.scene_id}</div>
           ))}
         </div>
+      </Card>
+
+      <Card title="Aperçu animé">
+        <Player storyboard={sb} characters={state.characters} width={240} />
+        <p className="muted small">Aperçu calculé par le même moteur que la vidéo finale (sans voix ni musique pour l'instant).</p>
       </Card>
 
       {sb.scenes.map((s) => (
