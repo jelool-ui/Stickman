@@ -1,7 +1,8 @@
 // Détection réelle des outils disponibles (FFmpeg, Piper, eSpeak NG, resvg).
 // Rien n'est supposé : chaque outil est exécuté pour vérifier qu'il répond.
 import { spawnSync } from 'node:child_process';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync } from 'node:fs';
+import { VOICE_MODELS } from '../engine/voices.js';
 import path from 'node:path';
 
 function run(cmd, args) {
@@ -34,14 +35,14 @@ export function checkFfprobe() {
   return { ok: !!out, version: out?.split('\n')[0] ?? null };
 }
 
-export function checkPiper(voicesDir = 'assets/voices') {
-  const bin = run('piper', ['--help']) !== null || run('python3', ['-m', 'piper', '--help']) !== null;
-  const models = existsSync(voicesDir) ? readdirSync(voicesDir).filter((f) => f.endsWith('.onnx')) : [];
+export function checkPiper() {
+  const bin = run('piper', ['--help']) !== null;
+  const models = Object.entries(VOICE_MODELS).filter(([id, m]) => m.provider === 'piper' && m.approved && existsSync(path.join('assets/voices', `${id}.onnx`))).map(([id]) => id);
   return {
     ok: bin && models.length > 0,
     installed: bin,
-    models: models.map((m) => path.join(voicesDir, m)),
-    detail: !bin ? 'Piper non installé' : models.length ? `${models.length} modèle(s)` : 'aucun modèle vocal .onnx',
+    models,
+    detail: !bin ? 'Piper non installé (pip install piper-tts)' : models.length ? `modèle(s) autorisé(s) : ${models.join(', ')}` : 'aucun modèle autorisé : node scripts/setup-voices.js',
   };
 }
 

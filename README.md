@@ -7,7 +7,7 @@ Le projet est **gratuit** : il n'utilise que des logiciels open source (React, V
 Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessaire. Les vidéos sont produites par
 **GitHub Actions** et se téléchargent depuis votre téléphone.
 
-> **État actuel : Phase 4 sur 8 terminée** (idées, hooks, scénarios, storyboard). La liste à jour est dans la section « Avancement ».
+> **État actuel : Phase 5 sur 8 terminée** (voix et sous-titres). La liste à jour est dans la section « Avancement ».
 > Une fonctionnalité n'est marquée ✅ que lorsqu'elle a été testée.
 
 ---
@@ -20,7 +20,7 @@ Aucune API payante n'est obligatoire et aucun serveur permanent n'est nécessair
 | 2 | Interface : tableau de bord et 8 pages | ✅ testée (mobile 384 px) |
 | 3 | Personnages SVG, expressions, animations | ✅ testée (vidéo de test 1080×1920 rendue) |
 | 4 | Idées, hooks, scénarios, storyboard JSON | ✅ testée (34 histoires, 6 catégories) |
-| 5 | Voix (Piper / eSpeak NG) et sous-titres | ⏳ à faire |
+| 5 | Voix (Piper / eSpeak NG) et sous-titres | ✅ testée (synchronisation mesurée à 100 %) |
 | 6 | Rendu vidéo (resvg + FFmpeg) et contrôle qualité | ⏳ à faire |
 | 7 | Workflows GitHub Actions | ⏳ à faire |
 | 8 | Finalisation, test de chaque catégorie, docs Android | ⏳ à faire |
@@ -42,6 +42,7 @@ Stickman/
 │   ├── characters/               Personnages : bibliothèque, squelette articulé, dessin SVG
 │   ├── animation/                17 animations, moteur (interpolation, fondus), caméra, transitions, texte animé
 │   ├── scenes/                   11 décors, 15 objets, 3 styles, composition d'une image complète
+│   ├── audio/                    Sous-titres (découpage, SRT) et préparation du texte pour la voix
 │   └── story/                    Idées, hooks, scénarios, validation, pipeline
 │       ├── categories.js         Profils des 6 catégories (narration, hooks, décors, sons, rythme)
 │       ├── library/              Histoires originales + base de faits sourcés
@@ -53,6 +54,9 @@ Stickman/
 │   ├── environment.js            Détection réelle des outils installés
 │   ├── frames.js                 SVG → pixels (resvg, police intégrée)
 │   ├── encode.js                 Pixels → MP4 H.264 (FFmpeg, sans fichiers temporaires)
+│   ├── tts/                      Synthèse vocale : Piper → eSpeak NG → sans voix, avec cache
+│   ├── voice.js                  Voix d'un storyboard, timings réels, piste voix
+│   ├── produce.js                Production : voix → sous-titres → images → MP4
 │   └── providers/claude.js       Fournisseur IA facultatif (API Claude, payant)
 ├── scripts/                      Commandes en ligne (doctor, production…)
 ├── data/                         Historique des idées et des productions (JSON)
@@ -75,17 +79,31 @@ idée → hook (3 propositions notées) → scénario JSON validé → voix + so
 
 ## Installation (environnement Claude Code ou ordinateur)
 
-Prérequis : Node.js 20 ou plus, FFmpeg avec libx264.
+Prérequis : Node.js 20 ou plus, FFmpeg avec libx264, Python 3 (pour Piper).
 
 ```bash
 npm install        # installe les dépendances
+pip install piper-tts && node scripts/setup-voices.js   # voix (facultatif mais recommandé)
+sudo apt-get install espeak-ng                         # voix de secours (facultatif)
 npm run doctor     # vérifie FFmpeg, resvg, Piper, eSpeak NG
 npm test           # tests unitaires
 npm run test:ui    # test de l'interface dans un vrai navigateur, largeur smartphone
 npm run dev        # démarre l'interface sur http://localhost:5173
 npm run render:test  # rend une scène de test de 14 s dans output/test-scene.mp4
 npm run storyboard -- --category auto --record   # génère un storyboard validé dans output/<id>/
+node scripts/produce-test.js comedy   # vidéo complète avec voix et sous-titres dans output/test-comedy/
 ```
+
+## Voix et sous-titres (résumé)
+
+- **Piper** avec la voix française `fr_FR-siwis-medium` (licence vérifiée : CC BY 4.0, attribution ajoutée).
+  Cinq autres voix françaises ont été examinées et écartées (licence non commerciale, licence incertaine ou qualité
+  insuffisante) : détails et mesures dans [`assets/voices/VOICES.md`](assets/voices/VOICES.md).
+- Chaque personnage a son profil (hauteur, vitesse, volume) : narrateur, principal, secondaire masculin et féminin.
+- Secours automatique : eSpeak NG (voix robotique), puis vidéo sans voix **signalée** dans le rapport.
+- Les durées des scènes, les mouvements de bouche et les sous-titres sont calés sur la **durée réelle** de chaque réplique.
+- Sous-titres incrustés par blocs de 2 lignes, mots-clés en couleur, et fichier `subtitles.srt` séparé.
+- Cache : une réplique déjà générée n'est jamais recalculée (`.cache/tts/`).
 
 ## Idées, hooks et scénarios (résumé)
 
@@ -140,7 +158,8 @@ Aucun secret n'est nécessaire pour le fonctionnement de base.
 | Problème | Solution |
 |---|---|
 | `npm run doctor` affiche ❌ ffmpeg | Installer FFmpeg (`sudo apt-get install ffmpeg`). Sur GitHub Actions il est installé automatiquement. |
-| ⚠️ piper / espeak | Facultatif à ce stade. Sans moteur vocal, la vidéo est produite sans voix et le rapport le signale. |
+| ⚠️ piper | `pip install piper-tts` puis `node scripts/setup-voices.js`. Sans Piper, eSpeak NG prend le relais. |
+| ⚠️ espeak | `sudo apt-get install espeak-ng` (facultatif). Sans aucun moteur, la vidéo est produite sans voix et le rapport le signale. |
 | Page blanche dans le navigateur | Lancer `npm run build` et lire l'erreur affichée. |
 
 ## Licence et contenus

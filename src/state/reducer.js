@@ -4,7 +4,7 @@ import { DEFAULT_CHARACTERS, validateCharacter } from '../../engine/characters/l
 import { DEFAULT_VOICE_PROFILES } from '../../engine/voices.js';
 import { DEMO_STORYBOARD } from '../../engine/samples/demo-storyboard.js';
 
-export const STATE_VERSION = 1;
+export const STATE_VERSION = 2;
 
 export function initialState() {
   return {
@@ -21,9 +21,13 @@ export function initialState() {
 }
 
 /** Fusionne un état sauvegardé avec les valeurs par défaut (tolère un état ancien ou corrompu). */
-export function hydrate(saved) {
+export function hydrate(savedIn) {
+  let saved = savedIn;
   const base = initialState();
-  if (!saved || typeof saved !== 'object' || saved.version !== STATE_VERSION) return base;
+  if (!saved || typeof saved !== 'object') return base;
+  // Version 1 → 2 : nouveaux profils de voix (modèle autorisé + hauteur) ; le reste est conservé.
+  if (saved.version === 1) saved = { ...saved, version: STATE_VERSION, voiceProfiles: base.voiceProfiles };
+  if (saved.version !== STATE_VERSION) return base;
   const merged = { ...base, ...saved, settings: { ...base.settings, ...(saved.settings || {}) } };
   if (!validateSettings(merged.settings).ok) merged.settings = base.settings;
   if (!Array.isArray(merged.characters) || !merged.characters.every((c) => validateCharacter(c).ok))

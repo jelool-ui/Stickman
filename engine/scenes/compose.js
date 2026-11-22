@@ -37,7 +37,7 @@ export function computeTimeline(storyboard) {
 }
 
 /** Estimation de la durée de parole d'un texte (remplacée par la durée audio réelle quand elle existe). */
-export function estimateSpeechSeconds(text, wordsPerSecond = 2.6) {
+export function estimateSpeechSeconds(text, wordsPerSecond = 3.2) {
   const words = String(text || '').split(/\s+/).filter(Boolean).length;
   return words ? words / wordsPerSecond + 0.2 : 0;
 }
@@ -58,6 +58,9 @@ export function planScene(scene, layout) {
     (speaking[d.character_id] ||= []).push({ start, end: Math.min(dur, start + len) });
     cursor = start + len + 0.15;
   }
+  // Narration dite par un personnage présent (le Guide) : sa bouche bouge aussi.
+  const nt = scene.timings?.narration;
+  if (nt?.speaker) (speaking[nt.speaker] ||= []).push({ start: nt.start, end: Math.min(dur, nt.start + nt.duration) });
   return ids.map((id, i) => {
     const x = n === 1 ? W * 0.5 : W * (0.27 + (0.46 * i) / (n - 1));
     const facing = n === 1 ? 1 : x < W / 2 ? 1 : -1;
@@ -144,6 +147,13 @@ export function renderSceneSubtitle(scene, t, layout) {
     // Le hook s'affiche en grand, en haut, dès la première image (aucune introduction).
     return renderAnimatedText(scene.subtitles, { x: w / 2, y: layout.titleY + w * 0.08, t: t + 0.15, style: 'pop', size: Math.round(w * 0.075),
       highlight: scene.highlight || [], maxChars: layout.vertical ? 18 : 36, box: true });
+  }
+  // Sous-titres synchronisés sur la voix : un bloc (2 lignes max) à la fois.
+  if (scene.subtitle_chunks?.length) {
+    const c = scene.subtitle_chunks.find((x) => t >= x.start && t < x.end + 0.15) || null;
+    if (!c) return '';
+    return renderAnimatedText(c.text, { x: w / 2, y: layout.subtitleY, t: t - c.start, style: 'pop', size: Math.round(w * 0.066),
+      highlight: scene.highlight || [], maxChars: layout.vertical ? 22 : 40 });
   }
   return renderAnimatedText(scene.subtitles, { x: w / 2, y: layout.subtitleY, t, style: 'pop', size: Math.round(w * 0.062),
     highlight: scene.highlight || [], maxChars: layout.vertical ? 22 : 40 });

@@ -130,3 +130,5 @@ input[type=range] { width: 100%; accent-color: var(--accent); min-height: 32px; 
 .sources { padding-left: 18px; margin: 0; } .sources a { color: var(--info); }
 .pill.info { color: var(--info); }
 @media (max-width: 400px) { .scores { grid-template-columns: 1fr; } }
+.voice-profile { border-top: 1px solid var(--border); padding: 12px 0; }
+.voice-profile:first-of-type { border-top: 0; }

@@ -42,7 +42,8 @@ describe("état de l'interface", () => {
   it('récupère un état sauvegardé corrompu ou ancien', () => {
     expect(hydrate(null)).toEqual(initialState());
     expect(hydrate({ version: 0 })).toEqual(initialState());
-    const h = hydrate({ version: 1, settings: { fps: 999 }, characters: 'oops', history: null });
+    expect(hydrate({ version: 1, voiceProfiles: [{ id: "narrator", piperModel: "x" }] }).voiceProfiles[0].model).toBe("fr_FR-siwis-medium");
+    const h = hydrate({ version: 2, settings: { fps: 999 }, characters: 'oops', history: null });
     expect(h.settings.fps).toBe(30);
     expect(Array.isArray(h.characters)).toBe(true);
     expect(h.history).toEqual([]);

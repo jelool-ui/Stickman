@@ -42,7 +42,7 @@ registerBackground('office', { label: 'Bureau', render: (c) => {
   return sky(c) + rect(0, 0, w, g, pal.sky) + floor(c) + windowFrame(w * 0.08, g * 0.22, w * 0.3, g * 0.26, pal) + blinds +
     rect(w * 0.6, g - g * 0.14, w * 0.36, g * 0.025, pal.soft, line(pal, 5)) + `<line x1="${w * 0.63}" y1="${g - g * 0.12}" x2="${w * 0.63}" y2="${g}" ${line(pal, 6)}/><line x1="${w * 0.93}" y1="${g - g * 0.12}" x2="${w * 0.93}" y2="${g}" ${line(pal, 6)}/>` +
     rect(w * 0.7, g - g * 0.27, w * 0.18, g * 0.11, pal.a2, line(pal, 6)) + `<line x1="${w * 0.79}" y1="${g - g * 0.16}" x2="${w * 0.79}" y2="${g - g * 0.14}" ${line(pal, 6)}/>` +
-    `<path d="M${w * 0.5} ${g} l-${w * 0.03} -${g * 0.08} h${w * 0.06} Z" fill="${pal.a1}" ${line(pal, 5)}/><path d="M${w * 0.5} ${g - g * 0.08} q-${w * 0.06} -${g * 0.08} 0 -${g * 0.14} q${w * 0.06} ${g * 0.06} 0 ${g * 0.14}" fill="${pal.a3}" ${line(pal, 4)}/>`;
+    `<path d="M${w * 0.07} ${g} l-${w * 0.03} -${g * 0.08} h${w * 0.06} Z" fill="${pal.a1}" ${line(pal, 5)}/><path d="M${w * 0.07} ${g - g * 0.08} q-${w * 0.06} -${g * 0.08} 0 -${g * 0.14} q${w * 0.06} ${g * 0.06} 0 ${g * 0.14}" fill="${pal.a3}" ${line(pal, 4)}/>`;
 } });
 
 registerBackground('street', { label: 'Rue', render: (c) => {

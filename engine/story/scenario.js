@@ -119,7 +119,12 @@ export function buildStoryboard(idea, { characters, hook, targetDuration = 40, w
     s.transition = !next ? 'cut' : next.scene_type === 'reveal' ? profile.transitions.reveal : profile.transitions.default;
   });
 
-  fitDuration(scenes, effectiveTarget(scenes, targetDuration), R);
+  const goal = effectiveTarget(scenes, targetDuration);
+  fitDuration(scenes, goal, R);
+  // Correction finale des arrondis : la dernière scène absorbe l'écart (jamais en dessous de sa parole).
+  const sum = scenes.reduce((a, x) => a + x.duration, 0);
+  const last = scenes[scenes.length - 1];
+  if (sum < 30) last.duration = Math.round((last.duration + (30 - sum) + 0.01) * 100) / 100;
 
   const total = Math.round(scenes.reduce((a, s) => a + s.duration, 0) * 10) / 10;
   const words = scenes.reduce((a, s) => a + wordCount(s.subtitles), 0);

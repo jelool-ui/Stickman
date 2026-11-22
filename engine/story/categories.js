@@ -1,3 +1,4 @@
+// Débit calibré sur la voix Piper réelle (3,24 mots/s mesurés, pauses comprises).
 // Profils des six catégories : consignes de narration, familles de hooks, décors, sons, modèles de storyboard, rythme.
 export const CATEGORY_PROFILES = {
   explainer: {
@@ -7,7 +8,7 @@ export const CATEGORY_PROFILES = {
     hookFamilies: ['question', 'everyday', 'promise-seconds', 'secret-word'],
     backgrounds: ['school', 'abstract', 'landscape', 'house', 'office'],
     sfx: { hook: 'pop', setup: 'whoosh', development: 'click', escalation: 'whoosh', reveal: 'ding', conclusion: 'pop' },
-    rhythm: { wordsPerSecond: 2.5, minScene: 2.5, maxScene: 7, pad: 0.6 },
+    rhythm: { wordsPerSecond: 3.1, minScene: 2.5, maxScene: 7, pad: 0.6 },
     transitions: { default: 'slide-left', reveal: 'flash' },
     cameras: { hook: 'zoom-in', setup: 'static', development: 'pan-right', escalation: 'zoom-in', reveal: 'focus', conclusion: 'zoom-out' },
     template: 'question-explication-revelation',
@@ -20,7 +21,7 @@ export const CATEGORY_PROFILES = {
     hookFamilies: ['situation', 'pov', 'no-believe', 'thought-understood'],
     backgrounds: ['house', 'office', 'street', 'bedroom', 'city'],
     sfx: { hook: 'boing', setup: 'pop', development: 'boing', escalation: 'drumroll', reveal: 'rimshot', conclusion: 'laugh' },
-    rhythm: { wordsPerSecond: 2.8, minScene: 2.2, maxScene: 6, pad: 0.5 },
+    rhythm: { wordsPerSecond: 3.3, minScene: 2.2, maxScene: 6, pad: 0.5 },
     transitions: { default: 'cut', reveal: 'flash' },
     cameras: { hook: 'zoom-in', setup: 'static', development: 'static', escalation: 'zoom-in', reveal: 'shake', conclusion: 'zoom-out' },
     template: 'situation-escalade-chute',
@@ -33,7 +34,7 @@ export const CATEGORY_PROFILES = {
     hookFamilies: ['mystery-situation', 'riddle', 'clue', 'thought-understood'],
     backgrounds: ['mystery', 'house', 'city', 'street', 'landscape'],
     sfx: { hook: 'suspense', setup: 'tick', development: 'suspense', escalation: 'heartbeat', reveal: 'reveal', conclusion: 'soft' },
-    rhythm: { wordsPerSecond: 2.4, minScene: 2.8, maxScene: 7, pad: 0.7 },
+    rhythm: { wordsPerSecond: 3.0, minScene: 2.8, maxScene: 7, pad: 0.7 },
     transitions: { default: 'fade', reveal: 'flash' },
     cameras: { hook: 'focus', setup: 'pan-left', development: 'zoom-in', escalation: 'shake', reveal: 'focus', conclusion: 'zoom-out' },
     template: 'enigme-indices-solution',
@@ -46,7 +47,7 @@ export const CATEGORY_PROFILES = {
     hookFamilies: ['imagine', 'what-if', 'question'],
     backgrounds: ['city', 'space', 'landscape', 'abstract', 'house'],
     sfx: { hook: 'whoosh', setup: 'magic', development: 'pop', escalation: 'whoosh', reveal: 'ding', conclusion: 'soft' },
-    rhythm: { wordsPerSecond: 2.6, minScene: 2.5, maxScene: 6.5, pad: 0.6 },
+    rhythm: { wordsPerSecond: 3.2, minScene: 2.5, maxScene: 6.5, pad: 0.6 },
     transitions: { default: 'zoom', reveal: 'flash' },
     cameras: { hook: 'zoom-out', setup: 'static', development: 'pan-right', escalation: 'zoom-in', reveal: 'focus', conclusion: 'zoom-out' },
     template: 'hypothese-consequences-lecon',
@@ -59,7 +60,7 @@ export const CATEGORY_PROFILES = {
     hookFamilies: ['facts-count', 'facts-last', 'facts-think-know'],
     backgrounds: ['abstract', 'landscape', 'space', 'city', 'school'],
     sfx: { hook: 'pop', setup: 'ding', development: 'click', escalation: 'ding', reveal: 'ding', conclusion: 'pop' },
-    rhythm: { wordsPerSecond: 2.6, minScene: 2.3, maxScene: 6.5, pad: 0.5 },
+    rhythm: { wordsPerSecond: 3.2, minScene: 2.3, maxScene: 6.5, pad: 0.5 },
     transitions: { default: 'slide-up', reveal: 'slide-up' },
     cameras: { hook: 'zoom-in', setup: 'static', development: 'static', escalation: 'pan-left', reveal: 'focus', conclusion: 'zoom-out' },
     template: 'trois-faits',
@@ -72,7 +73,7 @@ export const CATEGORY_PROFILES = {
     hookFamilies: ['number', 'everyone-said', 'motiv-question', 'situation'],
     backgrounds: ['landscape', 'school', 'city', 'street', 'bedroom'],
     sfx: { hook: 'soft', setup: 'soft', development: 'heartbeat', escalation: 'rise', reveal: 'success', conclusion: 'soft' },
-    rhythm: { wordsPerSecond: 2.4, minScene: 2.8, maxScene: 7, pad: 0.7 },
+    rhythm: { wordsPerSecond: 3.0, minScene: 2.8, maxScene: 7, pad: 0.7 },
     transitions: { default: 'fade', reveal: 'fade' },
     cameras: { hook: 'zoom-in', setup: 'pan-right', development: 'static', escalation: 'zoom-in', reveal: 'focus', conclusion: 'zoom-out' },
     template: 'difficulte-perseverance-lecon',
